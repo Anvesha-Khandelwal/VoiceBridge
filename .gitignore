@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment — NEVER COMMIT
+.env
+
+# Audio files
+audio/input/*
+audio/processed/*
+!audio/input/.gitkeep
+!audio/processed/.gitkeep
+
+# Model cache (large files)
+~/.cache/whisper/
+~/.cache/huggingface/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/

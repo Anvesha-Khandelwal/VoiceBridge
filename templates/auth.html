@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VoiceBridge AI — {{ mode|title }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sky:#0ea5e9;--sky-d:#0284c7;--sky-l:#e0f2fe;
+      --bg:#f0f4f8;--surface:#fff;--border:#e2e8f0;
+      --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+      --red:#ef4444;--radius:16px;--radius-sm:10px;
+    }
+    [data-theme="dark"]{
+      --bg:#0f172a;--surface:#1e293b;--border:#334155;
+      --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;--sky-l:#0c2742;
+    }
+    body{
+      font-family:'Outfit',sans-serif;background:var(--bg);
+      min-height:100vh;display:flex;align-items:center;
+      justify-content:center;padding:1rem;transition:background .3s;
+    }
+    .wrap{
+      display:grid;grid-template-columns:1fr 1fr;
+      width:100%;max-width:900px;background:var(--surface);
+      border-radius:var(--radius);overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,0.15);min-height:560px;
+    }
+    @media(max-width:640px){.wrap{grid-template-columns:1fr}.brand{display:none}}
+
+    /* Brand panel */
+    .brand{
+      background:linear-gradient(145deg,#0ea5e9 0%,#0284c7 50%,#075985 100%);
+      padding:3rem 2.5rem;display:flex;flex-direction:column;
+      justify-content:center;gap:2rem;color:white;position:relative;overflow:hidden;
+    }
+    .brand::before{content:'';position:absolute;top:-80px;right:-80px;
+      width:300px;height:300px;background:rgba(255,255,255,.08);border-radius:50%}
+    .brand::after{content:'';position:absolute;bottom:-60px;left:-60px;
+      width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%}
+    .brand-logo{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+    .brand-name{font-size:20px;font-weight:700}
+    .brand-sub{font-size:12px;opacity:.75}
+    .brand-feats{position:relative;z-index:1}
+    .brand-feats h2{font-size:22px;font-weight:600;margin-bottom:1.5rem;line-height:1.3}
+    .feat{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;font-size:14px;opacity:.9}
+    .feat-dot{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.25);
+      flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .brand-tags{display:flex;flex-wrap:wrap;gap:6px;position:relative;z-index:1}
+    .brand-tag{padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.15);
+      font-size:11px;font-weight:600;font-family:'DM Mono',monospace}
+
+    /* Form panel */
+    .form-panel{
+      padding:3rem 2.5rem;display:flex;flex-direction:column;
+      justify-content:center;background:var(--surface);
+    }
+    .auth-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px}
+    .auth-sub{font-size:14px;color:var(--text2);margin-bottom:2rem}
+    .form-group{margin-bottom:1rem}
+    .form-group label{
+      display:block;font-size:12px;font-weight:600;
+      text-transform:uppercase;letter-spacing:.06em;
+      color:var(--text2);margin-bottom:6px;
+    }
+    .form-group input{
+      width:100%;padding:12px 14px;background:var(--bg);
+      border:1px solid var(--border);border-radius:var(--radius-sm);
+      font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);
+      outline:none;transition:border-color .15s;
+    }
+    .form-group input:focus{border-color:var(--sky)}
+    .form-group input::placeholder{color:var(--text3)}
+    .remember-row{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:1.5rem;font-size:13px;color:var(--text2);
+    }
+    .remember-row label{display:flex;align-items:center;gap:6px;cursor:pointer}
+    .btn-auth{
+      width:100%;padding:13px;background:var(--sky);color:white;
+      border:none;border-radius:var(--radius-sm);
+      font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;
+      cursor:pointer;transition:all .15s;margin-bottom:1.25rem;
+    }
+    .btn-auth:hover{background:var(--sky-d);transform:translateY(-1px)}
+    .btn-auth:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .auth-switch{text-align:center;font-size:13px;color:var(--text2)}
+    .auth-switch a{color:var(--sky);text-decoration:none;font-weight:600}
+    .error-msg{
+      background:#fee2e2;color:#dc2626;border-radius:var(--radius-sm);
+      padding:10px 14px;font-size:13px;margin-bottom:1rem;display:none;
+    }
+    .error-msg.show{display:block}
+    .theme-toggle{
+      position:fixed;top:1rem;right:1rem;background:var(--surface);
+      border:1px solid var(--border);border-radius:50%;
+      width:40px;height:40px;cursor:pointer;font-size:18px;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .15s;
+    }
+    .theme-toggle:hover{transform:scale(1.1)}
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle">🌙</button>
+
+  <div class="wrap">
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="12" fill="rgba(255,255,255,0.2)"/>
+          <path d="M20 8a6 6 0 0 1 6 6v6a6 6 0 0 1-12 0v-6a6 6 0 0 1 6-6z" fill="white"/>
+          <path d="M10 19a1.5 1.5 0 0 1 3 0 7 7 0 0 0 14 0 1.5 1.5 0 0 1 3 0 10 10 0 0 1-9 9.95V31h3a1 1 0 1 1 0 2H16a1 1 0 1 1 0-2h3v-2.05A10 10 0 0 1 10 19z" fill="white" opacity="0.85"/>
+        </svg>
+        <div>
+          <div class="brand-name">VoiceBridge AI</div>
+          <div class="brand-sub">Voice Intelligence Platform</div>
+        </div>
+      </div>
+      <div class="brand-feats">
+        <h2>Turn your voice into intelligence</h2>
+        <div class="feat"><div class="feat-dot">🎤</div><div>Speech recognition in 15+ languages</div></div>
+        <div class="feat"><div class="feat-dot">🌍</div><div>LLM translation via Groq + LLaMA3</div></div>
+        <div class="feat"><div class="feat-dot">📝</div><div>AI summarization with key points</div></div>
+        <div class="feat"><div class="feat-dot">🔍</div><div>Ask questions about transcripts (RAG)</div></div>
+        <div class="feat"><div class="feat-dot">📄</div><div>Export everything as PDF</div></div>
+      </div>
+      <!-- <div class="brand-tags">
+        <span class="brand-tag">ASR</span>
+        <span class="brand-tag">NLP</span>
+        <span class="brand-tag">LLM</span>
+        <span class="brand-tag">RAG</span>
+        <span class="brand-tag">FAISS</span>
+        <span class="brand-tag">Whisper</span>
+      </div> -->
+    </div>
+
+    <!-- Form -->
+    <div class="form-panel">
+        <div class="auth-title">Welcome back 👋</div>
+        <div class="auth-sub">Sign in to your VoiceBridge account</div>
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Your password"/>
+        </div>
+        <div class="remember-row">
+          <label><input type="checkbox" id="remember"/> Remember me</label>
+        </div>
+        <button class="btn-auth" id="submitBtn">Sign In</button>
+        <div class="auth-switch">No account? <a href="/signup">Create one free →</a></div>
+    
+        <div class="auth-title">Create account ✨</div>
+        <div class="auth-sub">Join VoiceBridge AI — it's free</div>
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="username" placeholder="Your name"/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="you@example.com"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Min. 6 characters"/>
+        </div>
+        <button class="btn-auth" id="submitBtn" style="margin-top:.5rem">Create Account</button>
+        <div class="auth-switch">Already have an account? <a href="/login">Sign in →</a></div>
+    </div>
+  </div>
+
+  <script>
+    const mode = "{{ mode }}";
+    const root = document.documentElement;
+    const tog  = document.getElementById("themeToggle");
+    const saved = localStorage.getItem("vb_theme") || "light";
+    if (saved === "dark") { root.setAttribute("data-theme","dark"); tog.textContent="☀️"; }
+    tog.addEventListener("click", () => {
+      const dark = root.getAttribute("data-theme") === "dark";
+      root.setAttribute("data-theme", dark ? "light" : "dark");
+      tog.textContent = dark ? "🌙" : "☀️";
+      localStorage.setItem("vb_theme", dark ? "light" : "dark");
+    });
+
+    const btn = document.getElementById("submitBtn");
+    const err = document.getElementById("errorMsg");
+    function showErr(m){ err.textContent=m; err.classList.add("show"); }
+
+    document.addEventListener("keydown", e => { if(e.key==="Enter") btn.click(); });
+
+    btn.addEventListener("click", async () => {
+      err.classList.remove("show");
+      const email    = document.getElementById("email")?.value.trim();
+      const password = document.getElementById("password")?.value;
+      const username = document.getElementById("username")?.value.trim();
+      const remember = document.getElementById("remember")?.checked;
+      if (!email || !password) return showErr("Please fill in all fields");
+
+      btn.disabled = true;
+      btn.textContent = "Please wait…";
+
+      const url  = mode === "login" ? "/api/auth/login" : "/api/auth/signup";
+      const body = mode === "login"
+        ? { email, password, remember }
+        : { email, password, username };
+
+      try {
+        const res  = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          showErr(data.error || "Something went wrong");
+          btn.disabled = false;
+          btn.textContent = mode === "login" ? "Sign In" : "Create Account";
+        } else {
+          window.location.href = "/";
+        }
+      } catch {
+        showErr("Network error — please try again");
+        btn.disabled = false;
+        btn.textContent = mode === "login" ? "Sign In" : "Create Account";
+      }
+    });
+  </script>
+</body>
+</html>
