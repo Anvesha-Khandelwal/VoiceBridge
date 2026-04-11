@@ -25,9 +25,6 @@
       </div>
     </div>
     <div class="header-right">
-      <span class="nav-badge">ASR</span>
-      <span class="nav-badge">RAG</span>
-      <span class="nav-badge">LLM</span>
       <button class="theme-btn" id="themeBtn" title="Toggle dark mode">🌙</button>
       <div class="user-menu" id="userMenu">
         <div class="user-avatar" id="userAvatar">{{ user.username[0]|upper }}</div>
@@ -45,29 +42,38 @@
 
   <div class="tab-bar">
     <button class="tab active" data-tab="translate">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11M2 7.5h7M2 11h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M2 4h11M2 7.5h7M2 11h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       Translate
     </button>
     <button class="tab" data-tab="summarize">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="2" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h5M5 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <rect x="2" y="2" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M5 6h5M5 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       Summarize
     </button>
     <button class="tab" data-tab="rag">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M7.5 5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       Ask Transcript
       <span class="tab-badge">RAG</span>
     </button>
     <button class="tab" data-tab="history">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 3h11M2 7h9M2 11h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M2 3h11M2 7h9M2 11h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       History
     </button>
   </div>
 
   <main class="container">
 
-    <!-- ══ TRANSLATE ══════════════════════════════════════════ -->
+    <!-- TRANSLATE -->
     <div class="tab-panel active" id="tab-translate">
-
       <div class="lang-bar">
         <div class="lang-group">
           <label>Speaking in</label>
@@ -123,8 +129,8 @@
                contenteditable="true"
                data-placeholder="Speak or type here…"></div>
           <div class="panel-footer">
-            <button class="btn-ghost" id="detectLangBtn" title="Auto-detect language">🔎 Detect Lang</button>
-            <button class="btn-ghost" id="improveBtn"    title="Fix grammar & improve clarity">✨ Improve</button>
+            <button class="btn-ghost" id="detectLangBtn">🔎 Detect</button>
+            <button class="btn-ghost" id="improveBtn">✨ Improve</button>
             <button class="btn-ghost" id="clearBtn">Clear</button>
             <button class="btn-ghost" id="uploadAudioBtn">Upload audio</button>
             <input type="file" id="audioFileInput" accept="audio/*" style="display:none"/>
@@ -168,32 +174,26 @@
           </svg>
         </button>
       </div>
-
       <div class="status-bar" id="statusBar"></div>
     </div>
 
-    <!-- ══ SUMMARIZE ══════════════════════════════════════════ -->
+    <!-- SUMMARIZE -->
     <div class="tab-panel" id="tab-summarize">
       <div class="feature-intro">
         <div class="intro-icon">📝</div>
         <div>
           <div class="intro-title">AI Summarization</div>
-          <div class="intro-desc">
-            Paste or transcribe a speech. LLaMA3 extracts key points,
-            topics, action items, and sentiment.
-          </div>
+          <div class="intro-desc">Paste a speech or transcript. LLaMA3 extracts key points, topics, action items and sentiment.</div>
         </div>
       </div>
       <div class="sum-input-area">
-        <textarea id="sumInput"
-                  placeholder="Paste transcript here, or use Translate tab and click → Ask RAG…"
-                  rows="7"></textarea>
+        <textarea id="sumInput" placeholder="Paste transcript here…" rows="7"></textarea>
         <div class="sum-controls">
           <div class="style-selector">
             <label>Style:</label>
             <button class="style-btn active" data-style="detailed">Detailed</button>
-            <button class="style-btn"        data-style="brief">Brief</button>
-            <button class="style-btn"        data-style="bullets">Bullets</button>
+            <button class="style-btn" data-style="brief">Brief</button>
+            <button class="style-btn" data-style="bullets">Bullets</button>
           </div>
           <button class="btn-primary" id="summarizeBtn">Summarize →</button>
         </div>
@@ -201,36 +201,27 @@
       <div id="summaryResult" class="summary-result hidden"></div>
     </div>
 
-    <!-- ══ RAG ════════════════════════════════════════════════ -->
+    <!-- RAG -->
     <div class="tab-panel" id="tab-rag">
       <div class="feature-intro">
         <div class="intro-icon">🔍</div>
         <div>
           <div class="intro-title">Ask Your Transcript (RAG)</div>
-          <div class="intro-desc">
-            Index transcript → FAISS semantic search →
-            LLM answers grounded in your actual words.
-          </div>
+          <div class="intro-desc">Index transcript → FAISS semantic search → LLM answers grounded in your actual words.</div>
         </div>
       </div>
-
       <div class="rag-section">
         <div class="rag-step-label">Step 1 — Index your transcript</div>
-        <textarea id="ragInput"
-                  placeholder="Paste transcript here to index…"
-                  rows="5"></textarea>
+        <textarea id="ragInput" placeholder="Paste transcript here to index…" rows="5"></textarea>
         <div class="rag-index-controls">
           <div id="ragIndexStatus" class="rag-status"></div>
           <button class="btn-primary" id="ragIndexBtn">Index Transcript +</button>
         </div>
       </div>
-
-      <div class="rag-section" id="ragAskSection"
-           style="opacity:.4;pointer-events:none">
+      <div class="rag-section" id="ragAskSection" style="opacity:.4;pointer-events:none">
         <div class="rag-step-label">Step 2 — Ask a question</div>
         <div class="rag-ask-bar">
-          <input type="text" id="ragQuestion"
-                 placeholder="e.g. What are the main topics discussed?"/>
+          <input type="text" id="ragQuestion" placeholder="e.g. What are the main topics discussed?"/>
           <button class="btn-primary" id="ragAskBtn">Ask</button>
         </div>
         <div class="suggested-questions">
@@ -241,20 +232,16 @@
           <button class="sq-btn">What was the conclusion?</button>
         </div>
       </div>
-
       <div id="ragChatHistory" class="rag-chat"></div>
     </div>
 
-    <!-- ══ HISTORY ════════════════════════════════════════════ -->
+    <!-- HISTORY -->
     <div class="tab-panel" id="tab-history">
       <div class="feature-intro">
         <div class="intro-icon">📚</div>
         <div>
           <div class="intro-title">Translation History</div>
-          <div class="intro-desc">
-            All your translations saved to your account.
-            Click any row to reload it in the Translate tab.
-          </div>
+          <div class="intro-desc">All your translations saved to your account. Click any row to reload it.</div>
         </div>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
@@ -265,7 +252,6 @@
 
   </main>
 
-  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-card">
       <div class="loading-spinner"></div>

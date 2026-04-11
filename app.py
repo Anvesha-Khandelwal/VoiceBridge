@@ -1,8 +1,5 @@
-"""
-app.py — VoiceBridge AI
-Fixed: auth, translation, summarization, RAG all working
-"""
-import os, logging
+import os
+import logging
 from flask import (Flask, render_template, request, jsonify,
                    redirect, url_for, send_file)
 from flask_cors import CORS
@@ -20,6 +17,7 @@ CORS(app)
 
 from config.config import Config
 cfg = Config()
+
 app.config["SECRET_KEY"]                     = cfg.SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"]        = cfg.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -91,7 +89,6 @@ def health():
 
 @app.route("/ping")
 def ping():
-    """Keep-alive endpoint — prevents Render free tier from spinning down."""
     return "pong", 200
 
 # ── Auth API ──────────────────────────────────────────────────────────────
@@ -139,7 +136,7 @@ def set_theme():
     db.session.commit()
     return jsonify({"theme": current_user.theme})
 
-# ── Translation API ───────────────────────────────────────────────────────
+# ── Translation ───────────────────────────────────────────────────────────
 @app.route("/api/transcribe", methods=["POST"])
 @login_required
 def transcribe():
@@ -161,6 +158,7 @@ def translate():
     if not data or not data.get("text"):
         return jsonify({"error": "No text provided"}), 400
     try:
+        logger.info(f"Translating with model: {cfg.GROQ_MODEL}")
         result = get_trans().translate(
             text        = data["text"],
             source_lang = data.get("source_lang", "auto"),
@@ -175,9 +173,9 @@ def translate():
         )
         db.session.add(t)
         db.session.commit()
-        return jsonify({"translated": result, "original": data["text"], "id": t.id})
+        return jsonify({"translated": result, "original": data["text"]})
     except Exception as e:
-        logger.error(f"Translate: {e}")
+        logger.error(f"Translate error: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -201,7 +199,7 @@ def delete_history(tid):
     db.session.commit()
     return jsonify({"message": "Deleted"})
 
-# ── Summarize API ─────────────────────────────────────────────────────────
+# ── Summarize ─────────────────────────────────────────────────────────────
 @app.route("/api/summarize", methods=["POST"])
 @login_required
 def summarize():
@@ -209,16 +207,17 @@ def summarize():
     if not data or not data.get("text"):
         return jsonify({"error": "No text provided"}), 400
     try:
+        logger.info(f"Summarizing with model: {cfg.GROQ_MODEL}")
         result = get_sum().summarize(
             text  = data["text"],
             style = data.get("style", "detailed")
         )
         return jsonify(result)
     except Exception as e:
-        logger.error(f"Summarize: {e}")
+        logger.error(f"Summarize error: {e}")
         return jsonify({"error": str(e)}), 500
 
-# ── RAG API ───────────────────────────────────────────────────────────────
+# ── RAG ───────────────────────────────────────────────────────────────────
 @app.route("/api/rag/index", methods=["POST"])
 @login_required
 def rag_index():
@@ -314,34 +313,10 @@ def export_pdf():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ── Real World Features ───────────────────────────────────────────────────
-@app.route("/api/detect-language", methods=["POST"])
-@login_required
-def detect_language():
-    """Auto-detect language of any text using LLM."""
-    data = request.get_json()
-    if not data or not data.get("text"):
-        return jsonify({"error": "No text"}), 400
-    try:
-        from groq import Groq
-        client = Groq(api_key=cfg.GROQ_API_KEY)
-        res = client.chat.completions.create(
-            model=cfg.GROQ_MODEL, max_tokens=10, temperature=0,
-            messages=[
-                {"role": "system", "content":
-                    "Detect the language. Reply with ONLY the ISO 639-1 code like: en, hi, es, fr"},
-                {"role": "user", "content": data["text"][:300]}
-            ]
-        )
-        return jsonify({"language": res.choices[0].message.content.strip().lower()[:5]})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 
 @app.route("/api/improve-text", methods=["POST"])
 @login_required
 def improve_text():
-    """Fix grammar and improve clarity using LLM."""
     data = request.get_json()
     if not data or not data.get("text"):
         return jsonify({"error": "No text"}), 400
@@ -362,10 +337,32 @@ def improve_text():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/api/detect-language", methods=["POST"])
+@login_required
+def detect_language():
+    data = request.get_json()
+    if not data or not data.get("text"):
+        return jsonify({"error": "No text"}), 400
+    try:
+        from groq import Groq
+        client = Groq(api_key=cfg.GROQ_API_KEY)
+        res = client.chat.completions.create(
+            model=cfg.GROQ_MODEL, max_tokens=10, temperature=0,
+            messages=[
+                {"role": "system", "content":
+                    "Detect the language. Reply with ONLY the ISO 639-1 code like: en, hi, es, fr"},
+                {"role": "user", "content": data["text"][:300]}
+            ]
+        )
+        return jsonify({"language": res.choices[0].message.content.strip().lower()[:5]})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # ── Init ──────────────────────────────────────────────────────────────────
 with app.app_context():
     db.create_all()
-    logger.info("Database ready")
+    logger.info(f"Database ready | Model: {cfg.GROQ_MODEL}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=cfg.PORT, debug=cfg.FLASK_DEBUG)

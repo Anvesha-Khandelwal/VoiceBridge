@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VoiceBridge AI — Voice Intelligence Platform</title>
+  <title>VoiceBridge AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/static/css/style.css"/>
 </head>
 <body>
 
-  <!-- Header -->
   <header class="header">
     <div class="header-left">
       <div class="logo-mark">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
           <rect width="32" height="32" rx="10" fill="#0ea5e9"/>
           <path d="M16 6a5 5 0 0 1 5 5v5a5 5 0 0 1-10 0v-5a5 5 0 0 1 5-5z" fill="white"/>
-          <path d="M8 15a1.5 1.5 0 0 1 3 0 5 5 0 0 0 10 0 1.5 1.5 0 0 1 3 0 8 8 0 0 1-7 7.94V25h2.5a1 1 0 1 1 0 2h-7a1 1 0 1 1 0-2H14v-2.06A8 8 0 0 1 8 15z" fill="white" opacity="0.85"/>
+          <path d="M8 15a1.5 1.5 0 0 1 3 0 5 5 0 0 0 10 0 1.5 1.5 0 0 1 3 0 8 8 0 0 1-7 7.94V25h2.5a1 1 0 1 1 0 2H11a1 1 0 1 1 0-2H14v-2.06A8 8 0 0 1 8 15z" fill="white" opacity="0.85"/>
         </svg>
       </div>
       <div>
@@ -25,40 +24,56 @@
         <div class="logo-sub">Voice Intelligence Platform</div>
       </div>
     </div>
-    <nav class="header-nav">
-      <span class="nav-badge">ASR</span>
-      <span class="nav-badge">NLP</span>
-      <span class="nav-badge">RAG</span>
-      <span class="nav-badge">LLM</span>
-      <a href="https://github.com" target="_blank" class="nav-link">GitHub ↗</a>
-    </nav>
+    <div class="header-right">
+      <button class="theme-btn" id="themeBtn" title="Toggle dark mode">🌙</button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-avatar" id="userAvatar">{{ user.username[0]|upper }}</div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-info">
+            <div class="user-name">{{ user.username }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a href="/logout" class="dropdown-item">Sign out</a>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <!-- Tab Navigation -->
   <div class="tab-bar">
     <button class="tab active" data-tab="translate">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M2 4h11M2 7.5h7M2 11h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       Translate
     </button>
     <button class="tab" data-tab="summarize">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <rect x="2" y="2" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M5 6h5M5 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       Summarize
     </button>
     <button class="tab" data-tab="rag">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M7.5 5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
       Ask Transcript
       <span class="tab-badge">RAG</span>
+    </button>
+    <button class="tab" data-tab="history">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M2 3h11M2 7h9M2 11h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      History
     </button>
   </div>
 
   <main class="container">
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- TAB 1: TRANSLATE                           -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- TRANSLATE -->
     <div class="tab-panel active" id="tab-translate">
-
-      <!-- Language selector -->
       <div class="lang-bar">
         <div class="lang-group">
           <label>Speaking in</label>
@@ -80,7 +95,7 @@
             <option value="ko-KR" data-code="ko">Korean (한국어)</option>
           </select>
         </div>
-        <button class="swap-btn" id="swapBtn" title="Swap languages">⇄</button>
+        <button class="swap-btn" id="swapBtn">⇄</button>
         <div class="lang-group">
           <label>Translate to</label>
           <select id="toLang">
@@ -102,7 +117,6 @@
         </div>
       </div>
 
-      <!-- Text panels -->
       <div class="panels">
         <div class="panel" id="origPanel">
           <div class="panel-header">
@@ -111,8 +125,12 @@
               <span></span><span></span><span></span><span></span><span></span>
             </div>
           </div>
-          <div class="panel-body" id="origText" contenteditable="true" data-placeholder="Speak or type here…"></div>
+          <div class="panel-body" id="origText"
+               contenteditable="true"
+               data-placeholder="Speak or type here…"></div>
           <div class="panel-footer">
+            <button class="btn-ghost" id="detectLangBtn">🔎 Detect</button>
+            <button class="btn-ghost" id="improveBtn">✨ Improve</button>
             <button class="btn-ghost" id="clearBtn">Clear</button>
             <button class="btn-ghost" id="uploadAudioBtn">Upload audio</button>
             <input type="file" id="audioFileInput" accept="audio/*" style="display:none"/>
@@ -125,55 +143,51 @@
             <span class="panel-label">Translation</span>
             <span class="model-tag">Groq LLaMA3</span>
           </div>
-          <div class="panel-body" id="transText" data-placeholder="Translation appears here…"></div>
+          <div class="panel-body" id="transText"
+               data-placeholder="Translation appears here…"></div>
           <div class="panel-footer">
             <button class="btn-ghost" id="speakTransBtn">▶ Speak</button>
+            <button class="btn-ghost" id="sendToRagBtn">→ Ask RAG</button>
+            <button class="btn-ghost" id="exportPdfBtn">⬇ PDF</button>
             <button class="btn-ghost" id="copyTransBtn">Copy</button>
-            <button class="btn-ghost" id="sendToRagBtn" title="Send this to Ask Transcript tab">→ Ask RAG</button>
           </div>
         </div>
       </div>
 
-      <!-- Record controls -->
       <div class="controls">
         <div class="record-area">
           <button class="record-btn" id="recordBtn">
             <span class="record-pulse"></span>
-            <svg class="mic-svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
               <path d="M15 4a5 5 0 0 1 5 5v7a5 5 0 0 1-10 0V9a5 5 0 0 1 5-5z" fill="currentColor"/>
-              <path d="M7 14a1 1 0 1 1 2 0 6 6 0 0 0 12 0 1 1 0 1 1 2 0 8 8 0 0 1-7 7.93V24h2a1 1 0 1 1 0 2H12a1 1 0 1 1 0-2h2v-2.07A8 8 0 0 1 7 14z" fill="currentColor" opacity="0.7"/>
+              <path d="M7 14a1 1 0 1 1 2 0 6 6 0 0 0 12 0 1 1 0 1 1 2 0 8 8 0 0 1-7 7.93V24h2a1 1 0 1 1 0 2H12a1 1 0 1 1 0-2h2v-2.07A8 8 0 0 1 7 14z"
+                    fill="currentColor" opacity="0.7"/>
             </svg>
           </button>
           <div class="record-label" id="recordLabel">Tap to speak</div>
         </div>
         <button class="btn-primary" id="translateBtn" disabled>
           Translate
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </button>
       </div>
-
       <div class="status-bar" id="statusBar"></div>
-
-      <!-- History -->
-      <div class="section-divider">Recent Translations</div>
-      <div id="historyList"><p class="empty-msg">No translations yet</p></div>
     </div>
 
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- TAB 2: SUMMARIZE                           -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- SUMMARIZE -->
     <div class="tab-panel" id="tab-summarize">
       <div class="feature-intro">
         <div class="intro-icon">📝</div>
         <div>
           <div class="intro-title">AI Summarization</div>
-          <div class="intro-desc">Paste or transcribe a speech. The LLM extracts key points, topics, and action items.</div>
+          <div class="intro-desc">Paste a speech or transcript. LLaMA3 extracts key points, topics, action items and sentiment.</div>
         </div>
       </div>
-
       <div class="sum-input-area">
-        <textarea id="sumInput" placeholder="Paste transcript here, or use the Translate tab and click → Ask RAG to send it here automatically…" rows="8"></textarea>
+        <textarea id="sumInput" placeholder="Paste transcript here…" rows="7"></textarea>
         <div class="sum-controls">
           <div class="style-selector">
             <label>Style:</label>
@@ -181,70 +195,63 @@
             <button class="style-btn" data-style="brief">Brief</button>
             <button class="style-btn" data-style="bullets">Bullets</button>
           </div>
-          <button class="btn-primary" id="summarizeBtn">
-            Summarize
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <button class="btn-primary" id="summarizeBtn">Summarize →</button>
         </div>
       </div>
-
       <div id="summaryResult" class="summary-result hidden"></div>
     </div>
 
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- TAB 3: RAG — ASK YOUR TRANSCRIPT           -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- RAG -->
     <div class="tab-panel" id="tab-rag">
       <div class="feature-intro">
         <div class="intro-icon">🔍</div>
         <div>
           <div class="intro-title">Ask Your Transcript (RAG)</div>
-          <div class="intro-desc">Index your transcript into a vector database, then ask questions. The AI finds relevant parts and answers using only your words.</div>
+          <div class="intro-desc">Index transcript → FAISS semantic search → LLM answers grounded in your actual words.</div>
         </div>
       </div>
-
-      <!-- RAG Step 1: Index -->
       <div class="rag-section">
         <div class="rag-step-label">Step 1 — Index your transcript</div>
-        <textarea id="ragInput" placeholder="Paste transcript here to index it…" rows="6"></textarea>
+        <textarea id="ragInput" placeholder="Paste transcript here to index…" rows="5"></textarea>
         <div class="rag-index-controls">
           <div id="ragIndexStatus" class="rag-status"></div>
-          <button class="btn-primary" id="ragIndexBtn">
-            Index Transcript
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </button>
+          <button class="btn-primary" id="ragIndexBtn">Index Transcript +</button>
         </div>
       </div>
-
-      <!-- RAG Step 2: Ask -->
-      <div class="rag-section" id="ragAskSection" style="opacity:0.4;pointer-events:none">
+      <div class="rag-section" id="ragAskSection" style="opacity:.4;pointer-events:none">
         <div class="rag-step-label">Step 2 — Ask a question</div>
         <div class="rag-ask-bar">
-          <input type="text" id="ragQuestion" placeholder="e.g. What did you say about pricing? What are the main topics?"/>
+          <input type="text" id="ragQuestion" placeholder="e.g. What are the main topics discussed?"/>
           <button class="btn-primary" id="ragAskBtn">Ask</button>
         </div>
-
-        <!-- Suggested questions -->
         <div class="suggested-questions">
           <span class="sq-label">Try:</span>
           <button class="sq-btn">What are the key points?</button>
-          <button class="sq-btn">Summarize the main topics</button>
+          <button class="sq-btn">Summarize main topics</button>
           <button class="sq-btn">What action items were mentioned?</button>
-          <button class="sq-btn">What was the speaker's conclusion?</button>
+          <button class="sq-btn">What was the conclusion?</button>
         </div>
       </div>
-
-      <!-- RAG Answer display -->
-      <div id="ragResult" class="rag-result hidden"></div>
-
-      <!-- RAG Chat history -->
       <div id="ragChatHistory" class="rag-chat"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="tab-panel" id="tab-history">
+      <div class="feature-intro">
+        <div class="intro-icon">📚</div>
+        <div>
+          <div class="intro-title">Translation History</div>
+          <div class="intro-desc">All your translations saved to your account. Click any row to reload it.</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+        <button class="btn-ghost" id="refreshHistoryBtn">↻ Refresh</button>
+      </div>
+      <div id="dbHistoryList"><p class="empty-msg">Loading…</p></div>
     </div>
 
   </main>
 
-  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-card">
       <div class="loading-spinner"></div>

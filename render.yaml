@@ -8,7 +8,7 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL
-        value: llama3-8b-8192
+        value: llama-3.3-70b-versatile
       - key: WHISPER_MODEL_SIZE
         value: tiny
       - key: FLASK_DEBUG
