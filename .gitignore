@@ -41,3 +41,5 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+auth/models.py
