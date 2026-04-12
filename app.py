@@ -5,6 +5,10 @@ from flask import (Flask, render_template, request, jsonify,
 from flask_cors import CORS
 from flask_login import (LoginManager, login_user, logout_user,
                          login_required, current_user)
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,14 +22,84 @@ CORS(app)
 from config.config import Config
 cfg = Config()
 
+# Use /tmp for SQLite on Render (persistent within session)
+db_path = os.environ.get("DATABASE_URL", "sqlite:////tmp/voicebridge.db")
+if db_path.startswith("sqlite:///") and not db_path.startswith("sqlite:////"):
+    db_path = "sqlite:////tmp/voicebridge.db"
+
 app.config["SECRET_KEY"]                     = cfg.SECRET_KEY
-app.config["SQLALCHEMY_DATABASE_URI"]        = cfg.DATABASE_URL
+app.config["SQLALCHEMY_DATABASE_URI"]        = db_path
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"]             = 50 * 1024 * 1024
 
-from auth.models import db, User, Translation, RAGSession
+# ── Inline models ─────────────────────────────────────────────────────────
+db = SQLAlchemy()
 db.init_app(app)
 
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+    id         = db.Column(db.Integer, primary_key=True)
+    email      = db.Column(db.String(150), unique=True, nullable=False)
+    username   = db.Column(db.String(100), nullable=False)
+    password   = db.Column(db.String(256), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    theme      = db.Column(db.String(10), default="light")
+    translations = db.relationship("Translation", backref="user", lazy=True, cascade="all, delete-orphan")
+    rag_sessions = db.relationship("RAGSession", backref="user", lazy=True, cascade="all, delete-orphan")
+
+    def set_password(self, raw):
+        self.password = generate_password_hash(raw)
+
+    def check_password(self, raw):
+        return check_password_hash(self.password, raw)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "email": self.email,
+            "username": self.username, "theme": self.theme,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+class Translation(db.Model):
+    __tablename__ = "translations"
+    id              = db.Column(db.Integer, primary_key=True)
+    user_id         = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    original_text   = db.Column(db.Text, nullable=False)
+    translated_text = db.Column(db.Text, nullable=False)
+    source_lang     = db.Column(db.String(10), nullable=False)
+    target_lang     = db.Column(db.String(10), nullable=False)
+    created_at      = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "original_text": self.original_text,
+            "translated_text": self.translated_text,
+            "source_lang": self.source_lang,
+            "target_lang": self.target_lang,
+            "created_at": self.created_at.strftime("%d %b %Y, %I:%M %p"),
+        }
+
+
+class RAGSession(db.Model):
+    __tablename__ = "rag_sessions"
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    session_id = db.Column(db.String(20), nullable=False)
+    title      = db.Column(db.String(200), default="Untitled Session")
+    transcript = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "session_id": self.session_id,
+            "title": self.title,
+            "created_at": self.created_at.strftime("%d %b %Y, %I:%M %p"),
+            "word_count": len(self.transcript.split()),
+        }
+
+# ── Login manager ─────────────────────────────────────────────────────────
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login_page"
@@ -85,7 +159,7 @@ def logout():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok"})
+    return jsonify({"status": "ok", "model": cfg.GROQ_MODEL})
 
 @app.route("/ping")
 def ping():
@@ -111,6 +185,7 @@ def signup():
     db.session.add(user)
     db.session.commit()
     login_user(user)
+    logger.info(f"New user: {email}")
     return jsonify({"message": "Account created", "user": user.to_dict()})
 
 
@@ -125,6 +200,7 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "Invalid email or password"}), 401
     login_user(user, remember=data.get("remember", False))
+    logger.info(f"Login: {email}")
     return jsonify({"message": "Logged in", "user": user.to_dict()})
 
 
@@ -158,7 +234,6 @@ def translate():
     if not data or not data.get("text"):
         return jsonify({"error": "No text provided"}), 400
     try:
-        logger.info(f"Translating with model: {cfg.GROQ_MODEL}")
         result = get_trans().translate(
             text        = data["text"],
             source_lang = data.get("source_lang", "auto"),
@@ -175,7 +250,7 @@ def translate():
         db.session.commit()
         return jsonify({"translated": result, "original": data["text"]})
     except Exception as e:
-        logger.error(f"Translate error: {e}")
+        logger.error(f"Translate: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -207,14 +282,10 @@ def summarize():
     if not data or not data.get("text"):
         return jsonify({"error": "No text provided"}), 400
     try:
-        logger.info(f"Summarizing with model: {cfg.GROQ_MODEL}")
-        result = get_sum().summarize(
-            text  = data["text"],
-            style = data.get("style", "detailed")
-        )
+        result = get_sum().summarize(data["text"], style=data.get("style", "detailed"))
         return jsonify(result)
     except Exception as e:
-        logger.error(f"Summarize error: {e}")
+        logger.error(f"Summarize: {e}")
         return jsonify({"error": str(e)}), 500
 
 # ── RAG ───────────────────────────────────────────────────────────────────
@@ -226,15 +297,13 @@ def rag_index():
         return jsonify({"error": "No text"}), 400
     try:
         sid = get_rag().index_transcript(
-            text       = data["text"],
-            session_id = data.get("session_id"),
-            metadata   = {"user_id": current_user.id}
+            text=data["text"], session_id=data.get("session_id"),
+            metadata={"user_id": current_user.id}
         )
         rs = RAGSession(
-            user_id    = current_user.id,
-            session_id = sid,
-            title      = data.get("title", data["text"][:60] + "..."),
-            transcript = data["text"]
+            user_id=current_user.id, session_id=sid,
+            title=data.get("title", data["text"][:60] + "..."),
+            transcript=data["text"]
         )
         db.session.add(rs)
         db.session.commit()
@@ -258,9 +327,9 @@ def rag_ask():
         return jsonify({"error": "No session_id"}), 400
     try:
         return jsonify(get_rag().ask(
-            question   = data["question"],
-            session_id = data["session_id"],
-            top_k      = data.get("top_k", 3)
+            question=data["question"],
+            session_id=data["session_id"],
+            top_k=data.get("top_k", 3)
         ))
     except Exception as e:
         logger.error(f"RAG ask: {e}")
@@ -272,7 +341,6 @@ def rag_ask():
 def export_pdf():
     import io
     from fpdf import FPDF
-    from datetime import datetime
     data = request.get_json() or {}
     try:
         pdf = FPDF()
@@ -286,9 +354,7 @@ def export_pdf():
         pdf.ln(5)
         pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(120, 120, 120)
-        pdf.cell(0, 6,
-            f"Exported: {datetime.now().strftime('%d %b %Y, %I:%M %p')} | "
-            f"User: {current_user.username}", ln=True)
+        pdf.cell(0, 6, f"User: {current_user.username} | {datetime.now().strftime('%d %b %Y %I:%M %p')}", ln=True)
         pdf.ln(4)
 
         def section(title, text):
@@ -308,8 +374,7 @@ def export_pdf():
         buf = io.BytesIO(bytes(pdf.output()))
         buf.seek(0)
         return send_file(buf, mimetype="application/pdf",
-                         as_attachment=True,
-                         download_name="voicebridge-export.pdf")
+                         as_attachment=True, download_name="voicebridge-export.pdf")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -326,10 +391,7 @@ def improve_text():
         res = client.chat.completions.create(
             model=cfg.GROQ_MODEL, max_tokens=1024, temperature=0.3,
             messages=[
-                {"role": "system", "content":
-                    "Fix grammar, spelling and clarity. "
-                    "Keep the same language and meaning. "
-                    "Return ONLY the corrected text."},
+                {"role": "system", "content": "Fix grammar and clarity. Return ONLY corrected text."},
                 {"role": "user", "content": data["text"]}
             ]
         )
@@ -350,8 +412,7 @@ def detect_language():
         res = client.chat.completions.create(
             model=cfg.GROQ_MODEL, max_tokens=10, temperature=0,
             messages=[
-                {"role": "system", "content":
-                    "Detect the language. Reply with ONLY the ISO 639-1 code like: en, hi, es, fr"},
+                {"role": "system", "content": "Detect language. Reply ONLY with ISO 639-1 code: en, hi, es, fr etc."},
                 {"role": "user", "content": data["text"][:300]}
             ]
         )
@@ -362,7 +423,7 @@ def detect_language():
 # ── Init ──────────────────────────────────────────────────────────────────
 with app.app_context():
     db.create_all()
-    logger.info(f"Database ready | Model: {cfg.GROQ_MODEL}")
+    logger.info(f"DB ready at {db_path} | Model: {cfg.GROQ_MODEL}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=cfg.PORT, debug=cfg.FLASK_DEBUG)

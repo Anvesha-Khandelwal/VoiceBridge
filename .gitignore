@@ -43,3 +43,5 @@ logs/
 htmlcov/
 
 auth/models.py
+
+auth/
