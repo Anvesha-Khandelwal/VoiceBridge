@@ -420,6 +420,140 @@ def detect_language():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+        # ═══════════════════════════════════════════════════════
+# ADD THESE ROUTES TO YOUR app.py
+# Insert them before the "with app.app_context():" line
+# ═══════════════════════════════════════════════════════
+
+# ── Landing page (public) ─────────────────────────────────────────────────
+@app.route("/landing")
+def landing():
+    return render_template("landing.html")
+
+# Make landing the default for non-logged-in users
+# REPLACE your existing index route with this:
+@app.route("/")
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+    return render_template("landing.html")
+
+# ── Dashboard ─────────────────────────────────────────────────────────────
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html", user=current_user)
+
+# ── App (the translator) ──────────────────────────────────────────────────
+@app.route("/app")
+@login_required
+def app_page():
+    return render_template("index.html", user=current_user)
+
+# ── Meeting notes generator ───────────────────────────────────────────────
+@app.route("/api/meeting-notes", methods=["POST"])
+@login_required
+def meeting_notes():
+    """
+    FEATURE: Generate professional meeting notes from transcript.
+    Returns structured: date, attendees (inferred), decisions, action items, next steps.
+    """
+    data = request.get_json()
+    if not data or not data.get("text"):
+        return jsonify({"error": "No text provided"}), 400
+    try:
+        from groq import Groq
+        import json, re
+        client = Groq(api_key=cfg.GROQ_API_KEY)
+        system = """You are a professional meeting notes writer.
+Convert the transcript into structured meeting notes. Return ONLY valid JSON:
+{
+  "title": "Meeting title inferred from content",
+  "date": "Today's date or as mentioned",
+  "summary": "2-3 sentence executive summary",
+  "key_decisions": ["decision 1", "decision 2"],
+  "action_items": [
+    {"task": "task description", "owner": "person name or TBD", "deadline": "deadline or TBD"}
+  ],
+  "next_steps": ["next step 1", "next step 2"],
+  "topics_discussed": ["topic 1", "topic 2", "topic 3"]
+}"""
+        resp = client.chat.completions.create(
+            model=cfg.GROQ_MODEL, max_tokens=1024, temperature=0.3,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": f"Generate meeting notes from:\n\n{data['text']}"}
+            ]
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r"```[a-z]*|```", "", raw).strip()
+        result = json.loads(raw)
+        return jsonify(result)
+    except json.JSONDecodeError:
+        return jsonify({"raw": resp.choices[0].message.content.strip()})
+    except Exception as e:
+        logger.error(f"Meeting notes: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ── Translation confidence score ──────────────────────────────────────────
+@app.route("/api/translate-with-confidence", methods=["POST"])
+@login_required
+def translate_with_confidence():
+    """
+    USP FEATURE: Translate AND rate confidence + flag ambiguous phrases.
+    Returns: translation, confidence score (1-10), ambiguous_phrases, notes
+    """
+    data = request.get_json()
+    if not data or not data.get("text"):
+        return jsonify({"error": "No text provided"}), 400
+    try:
+        from groq import Groq
+        import json, re
+        target = data.get("target_lang", "en")
+        source = data.get("source_lang", "auto")
+        lang_names = {
+            "en":"English","hi":"Hindi","es":"Spanish","fr":"French",
+            "de":"German","ta":"Tamil","te":"Telugu","bn":"Bengali",
+            "ja":"Japanese","zh":"Chinese","ar":"Arabic","pt":"Portuguese",
+            "ru":"Russian","ko":"Korean","auto":"detected language"
+        }
+        client = Groq(api_key=cfg.GROQ_API_KEY)
+        system = f"""Translate from {lang_names.get(source,'auto')} to {lang_names.get(target,'English')}.
+Then rate your translation. Return ONLY valid JSON:
+{{
+  "translation": "the translated text",
+  "confidence": 8,
+  "confidence_reason": "why this score",
+  "ambiguous_phrases": ["phrase that was hard to translate"],
+  "notes": "any important translation notes or cultural context"
+}}
+Confidence: 9-10=perfect, 7-8=good, 5-6=some ambiguity, below 5=difficult."""
+
+        resp = client.chat.completions.create(
+            model=cfg.GROQ_MODEL, max_tokens=1024, temperature=0.1,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": data["text"]}
+            ]
+        )
+        raw    = re.sub(r"```[a-z]*|```", "", resp.choices[0].message.content.strip()).strip()
+        result = json.loads(raw)
+
+        # Save to history
+        t = Translation(
+            user_id=current_user.id,
+            original_text=data["text"],
+            translated_text=result.get("translation",""),
+            source_lang=source, target_lang=target
+        )
+        db.session.add(t)
+        db.session.commit()
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Translate+confidence: {e}")
+        return jsonify({"error": str(e)}), 500
+
 # ── Init ──────────────────────────────────────────────────────────────────
 with app.app_context():
     db.create_all()

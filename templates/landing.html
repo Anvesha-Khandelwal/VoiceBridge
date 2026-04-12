@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VoiceBridge AI — Voice Intelligence Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sky:#0ea5e9;--sky-d:#0284c7;--sky-l:#e0f2fe;
+      --purple:#8b5cf6;--green:#10b981;--amber:#f59e0b;
+      --bg:#ffffff;--bg2:#f8fafc;--text:#0f172a;--text2:#475569;--text3:#94a3b8;
+      --border:#e2e8f0;--radius:16px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);overflow-x:hidden}
+
+    /* NAV */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:1rem 2rem;
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(255,255,255,0.85);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(226,232,240,0.8);
+      transition:all .3s;
+    }
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;text-decoration:none;color:var(--text)}
+    .nav-links{display:flex;align-items:center;gap:2rem}
+    .nav-links a{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;transition:color .15s}
+    .nav-links a:hover{color:var(--sky)}
+    .nav-cta{
+      background:var(--sky);color:white;
+      padding:9px 22px;border-radius:50px;
+      font-size:14px;font-weight:600;text-decoration:none;
+      transition:all .2s;
+    }
+    .nav-cta:hover{background:var(--sky-d);transform:translateY(-1px);box-shadow:0 4px 16px rgba(14,165,233,.3)}
+
+    /* HERO */
+    .hero{
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;padding:8rem 2rem 4rem;
+      background:radial-gradient(ellipse 80% 60% at 50% -20%, rgba(14,165,233,.12) 0%, transparent 70%);
+      position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;top:20%;left:-10%;
+      width:400px;height:400px;border-radius:50%;
+      background:radial-gradient(circle,rgba(139,92,246,.08),transparent 70%);
+    }
+    .hero::after{
+      content:'';position:absolute;bottom:10%;right:-5%;
+      width:300px;height:300px;border-radius:50%;
+      background:radial-gradient(circle,rgba(16,185,129,.08),transparent 70%);
+    }
+
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(139,92,246,.1));
+      border:1px solid rgba(14,165,233,.25);
+      border-radius:50px;padding:6px 16px;
+      font-size:13px;font-weight:600;color:var(--sky);
+      margin-bottom:1.5rem;
+      animation:fadeUp .6s ease both;
+    }
+    .hero-badge span{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--sky);animation:pulse 2s infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    .hero h1{
+      font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;
+      line-height:1.1;letter-spacing:-2px;
+      margin-bottom:1.5rem;
+      animation:fadeUp .6s ease .1s both;
+    }
+    .hero h1 .grad{
+      background:linear-gradient(135deg,#0ea5e9,#8b5cf6);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .hero p{
+      font-size:clamp(1rem,2vw,1.25rem);color:var(--text2);
+      max-width:600px;line-height:1.7;margin-bottom:2.5rem;
+      animation:fadeUp .6s ease .2s both;
+    }
+
+    .hero-buttons{
+      display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+      animation:fadeUp .6s ease .3s both;
+    }
+    .btn-hero-primary{
+      background:var(--sky);color:white;
+      padding:14px 32px;border-radius:50px;
+      font-size:15px;font-weight:700;text-decoration:none;
+      transition:all .2s;
+      box-shadow:0 4px 24px rgba(14,165,233,.35);
+    }
+    .btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(14,165,233,.45)}
+    .btn-hero-secondary{
+      background:transparent;color:var(--text);
+      padding:14px 32px;border-radius:50px;
+      font-size:15px;font-weight:600;text-decoration:none;
+      border:1.5px solid var(--border);transition:all .2s;
+    }
+    .btn-hero-secondary:hover{border-color:var(--sky);color:var(--sky);transform:translateY(-2px)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+    /* DEMO PREVIEW */
+    .hero-preview{
+      margin-top:4rem;width:100%;max-width:800px;
+      background:white;border-radius:20px;
+      box-shadow:0 32px 80px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.05);
+      overflow:hidden;
+      animation:fadeUp .8s ease .4s both;
+    }
+    .preview-bar{
+      background:#f8fafc;padding:12px 16px;
+      display:flex;align-items:center;gap:8px;
+      border-bottom:1px solid var(--border);
+    }
+    .preview-dot{width:10px;height:10px;border-radius:50%}
+    .preview-url{
+      flex:1;background:white;border:1px solid var(--border);
+      border-radius:6px;padding:4px 12px;
+      font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;
+      margin:0 8px;
+    }
+    .preview-content{
+      padding:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+    }
+    @media(max-width:600px){.preview-content{grid-template-columns:1fr}}
+    .preview-panel{
+      background:var(--bg2);border:1px solid var(--border);
+      border-radius:12px;padding:1rem;min-height:100px;
+    }
+    .preview-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+    .preview-text{font-size:14px;color:var(--text);line-height:1.6}
+    .preview-tag{display:inline-block;background:rgba(14,165,233,.1);color:var(--sky);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:.5rem;font-family:'JetBrains Mono',monospace}
+
+    /* STATS */
+    .stats{
+      padding:4rem 2rem;background:var(--bg2);
+      display:flex;justify-content:center;flex-wrap:wrap;gap:3rem;
+      border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+    }
+    .stat{text-align:center}
+    .stat-num{font-size:2.5rem;font-weight:900;color:var(--sky);letter-spacing:-1px}
+    .stat-label{font-size:14px;color:var(--text2);font-weight:500;margin-top:4px}
+
+    /* FEATURES */
+    .features{padding:6rem 2rem;max-width:1100px;margin:0 auto}
+    .section-label{
+      font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--sky);margin-bottom:1rem;
+    }
+    .section-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-1px;margin-bottom:1rem;line-height:1.2}
+    .section-sub{font-size:1.1rem;color:var(--text2);max-width:600px;line-height:1.7;margin-bottom:3rem}
+
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+    .feat-card{
+      background:white;border:1px solid var(--border);
+      border-radius:var(--radius);padding:1.75rem;
+      transition:all .2s;position:relative;overflow:hidden;
+    }
+    .feat-card::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(14,165,233,.04),transparent);
+      opacity:0;transition:opacity .2s;
+    }
+    .feat-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08);border-color:rgba(14,165,233,.3)}
+    .feat-card:hover::before{opacity:1}
+
+    .feat-icon{
+      width:48px;height:48px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;margin-bottom:1rem;
+    }
+    .feat-icon.blue{background:rgba(14,165,233,.12)}
+    .feat-icon.purple{background:rgba(139,92,246,.12)}
+    .feat-icon.green{background:rgba(16,185,129,.12)}
+    .feat-icon.amber{background:rgba(245,158,11,.12)}
+    .feat-icon.red{background:rgba(239,68,68,.12)}
+    .feat-icon.teal{background:rgba(20,184,166,.12)}
+
+    .feat-card h3{font-size:17px;font-weight:700;margin-bottom:.5rem}
+    .feat-card p{font-size:14px;color:var(--text2);line-height:1.65}
+    .feat-badge{
+      display:inline-block;margin-top:.75rem;
+      font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;
+      padding:3px 10px;border-radius:20px;
+      background:var(--bg2);color:var(--text3);border:1px solid var(--border);
+    }
+
+    /* TECH STACK */
+    .tech{
+      padding:5rem 2rem;background:var(--text);
+      text-align:center;
+    }
+    .tech h2{font-size:2rem;font-weight:800;color:white;margin-bottom:.75rem}
+    .tech p{font-size:1rem;color:#94a3b8;margin-bottom:2.5rem}
+    .tech-grid{
+      display:flex;flex-wrap:wrap;justify-content:center;gap:12px;
+      max-width:800px;margin:0 auto;
+    }
+    .tech-pill{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:50px;padding:8px 20px;
+      font-size:13px;font-weight:600;color:white;
+      font-family:'JetBrains Mono',monospace;
+      transition:all .15s;
+    }
+    .tech-pill:hover{background:rgba(14,165,233,.2);border-color:rgba(14,165,233,.4)}
+
+    /* HOW IT WORKS */
+    .how{padding:6rem 2rem;max-width:900px;margin:0 auto;text-align:center}
+    .steps{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:2rem;margin-top:3rem;position:relative;
+    }
+    .step{padding:1.5rem;position:relative}
+    .step-num{
+      width:44px;height:44px;border-radius:50%;
+      background:linear-gradient(135deg,var(--sky),var(--purple));
+      color:white;font-size:16px;font-weight:800;
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 1rem;
+    }
+    .step h3{font-size:15px;font-weight:700;margin-bottom:.5rem}
+    .step p{font-size:13px;color:var(--text2);line-height:1.6}
+
+    /* CTA */
+    .cta{
+      padding:6rem 2rem;text-align:center;
+      background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(139,92,246,.08));
+      border-top:1px solid var(--border);
+    }
+    .cta h2{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-1px;margin-bottom:1rem}
+    .cta p{font-size:1.1rem;color:var(--text2);margin-bottom:2rem}
+
+    /* FOOTER */
+    footer{
+      padding:2rem;text-align:center;
+      background:var(--text);color:#94a3b8;
+      font-size:13px;
+    }
+    footer a{color:#94a3b8;text-decoration:none}
+    footer a:hover{color:var(--sky)}
+
+    @media(max-width:768px){
+      nav .nav-links{display:none}
+      .preview-content{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="10" fill="#0ea5e9"/>
+        <path d="M16 6a5 5 0 0 1 5 5v5a5 5 0 0 1-10 0v-5a5 5 0 0 1 5-5z" fill="white"/>
+        <path d="M8 15a1.5 1.5 0 0 1 3 0 5 5 0 0 0 10 0 1.5 1.5 0 0 1 3 0 8 8 0 0 1-7 7.94V25h2.5a1 1 0 1 1 0 2H11a1 1 0 1 1 0-2H14v-2.06A8 8 0 0 1 8 15z" fill="white" opacity="0.85"/>
+      </svg>
+      VoiceBridge AI
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#tech">Tech Stack</a>
+      <a href="https://github.com/Anvesha-Khandelwal/VoiceBridge" target="_blank">GitHub</a>
+    </div>
+    <a href="/login" class="nav-cta">Get Started →</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span></span> Powered by Whisper + LLaMA3 + FAISS
+    </div>
+    <h1>Your voice,<br/>every <span class="grad">language.</span></h1>
+    <p>
+      VoiceBridge AI converts speech to text, translates across 15+ languages,
+      summarizes meetings, and lets you ask questions about your transcripts —
+      all in real time.
+    </p>
+    <div class="hero-buttons">
+      <a href="/signup" class="btn-hero-primary">Start for free →</a>
+      <a href="https://github.com/Anvesha-Khandelwal/VoiceBridge" target="_blank" class="btn-hero-secondary">View on GitHub</a>
+    </div>
+
+    <div class="hero-preview">
+      <div class="preview-bar">
+        <div class="preview-dot" style="background:#ef4444"></div>
+        <div class="preview-dot" style="background:#f59e0b"></div>
+        <div class="preview-dot" style="background:#10b981"></div>
+        <div class="preview-url">voicebridge-aouy.onrender.com</div>
+      </div>
+      <div class="preview-content">
+        <div class="preview-panel">
+          <div class="preview-tag">Hindi → English</div>
+          <div class="preview-label">Original</div>
+          <div class="preview-text">नमस्ते, आज की बैठक में हम तीन मुख्य विषयों पर चर्चा करेंगे।</div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-tag">Groq LLaMA3</div>
+          <div class="preview-label">Translation</div>
+          <div class="preview-text">Hello, in today's meeting we will discuss three main topics.</div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-tag">RAG Q&A</div>
+          <div class="preview-label">Question</div>
+          <div class="preview-text">What were the action items from the meeting?</div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-tag">FAISS + LLM</div>
+          <div class="preview-label">AI Answer</div>
+          <div class="preview-text">Based on the transcript: 1) Review Q3 report 2) Schedule follow-up 3) Send summary email</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Languages supported</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">AI models integrated</div></div>
+    <div class="stat"><div class="stat-num">RAG</div><div class="stat-label">Vector search powered</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free to use</div></div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need<br/>for voice intelligence</h2>
+    <p class="section-sub">Built with production-grade AI models. Every feature solves a real problem for multilingual teams.</p>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon blue">🎤</div>
+        <h3>Real-time Speech Recognition</h3>
+        <p>OpenAI Whisper ASR converts speech to text with high accuracy across 15+ languages. Supports microphone and file upload.</p>
+        <span class="feat-badge">Whisper ASR</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon purple">🌍</div>
+        <h3>LLM-Powered Translation</h3>
+        <p>Groq's LLaMA3-70B translates with context awareness, preserving tone and meaning — not just word-for-word.</p>
+        <span class="feat-badge">LLaMA3 · Prompt Engineering</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon green">🔍</div>
+        <h3>Ask Your Transcript (RAG)</h3>
+        <p>Index any transcript into a FAISS vector database. Ask questions in natural language and get answers grounded in your words.</p>
+        <span class="feat-badge">RAG · FAISS · Embeddings</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon amber">📝</div>
+        <h3>AI Meeting Summarization</h3>
+        <p>Paste any transcript and get structured output: overview, key points, action items, topics, and sentiment analysis.</p>
+        <span class="feat-badge">LLM · Structured Output</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon red">✨</div>
+        <h3>Grammar & Clarity Improver</h3>
+        <p>The AI fixes grammar, improves sentence clarity, and detects the language of any typed or spoken text automatically.</p>
+        <span class="feat-badge">NLP · Text Processing</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon teal">📄</div>
+        <h3>PDF Export</h3>
+        <p>Export any translation, summary, or meeting notes as a professionally formatted PDF. Perfect for sharing with your team.</p>
+        <span class="feat-badge">fpdf2 · Document Generation</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">From voice to insight<br/>in seconds</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Speak or Upload</h3>
+        <p>Use your microphone or upload an audio file in any of 15+ supported languages</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Transcribe</h3>
+        <p>Whisper ASR converts your audio to text with high accuracy, even for accented speech</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Translate</h3>
+        <p>LLaMA3 translates the text preserving meaning, tone, and context — not just words</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Analyse</h3>
+        <p>Summarize, extract action items, or ask questions about your transcript using RAG</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section class="tech" id="tech">
+    <h2>Built with production-grade tech</h2>
+    <p>The same stack used at AI companies — not just course projects</p>
+    <div class="tech-grid">
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">Flask</span>
+      <span class="tech-pill">OpenAI Whisper</span>
+      <span class="tech-pill">Groq API</span>
+      <span class="tech-pill">LLaMA3-70B</span>
+      <span class="tech-pill">FAISS</span>
+      <span class="tech-pill">sentence-transformers</span>
+      <span class="tech-pill">RAG Pipeline</span>
+      <span class="tech-pill">SQLAlchemy</span>
+      <span class="tech-pill">Flask-Login</span>
+      <span class="tech-pill">Vector Embeddings</span>
+      <span class="tech-pill">Prompt Engineering</span>
+      <span class="tech-pill">Gunicorn</span>
+      <span class="tech-pill">Render</span>
+      <span class="tech-pill">GitHub Actions CI</span>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready to try it?</h2>
+    <p>Free to use. No credit card. Deploy in seconds.</p>
+    <a href="/signup" class="btn-hero-primary">Create free account →</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Built by <a href="https://github.com/Anvesha-Khandelwal" target="_blank">Anvesha Khandelwal</a> · 
+    <a href="https://github.com/Anvesha-Khandelwal/VoiceBridge" target="_blank">GitHub</a> · 
+    VoiceBridge AI — Voice Intelligence Platform</p>
+  </footer>
+
+</body>
+</html>
