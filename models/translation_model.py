@@ -26,7 +26,7 @@ class GroqTranslator:
         logger.info(f"Translating {source} -> {target} using {self.model}")
         resp = self.client.chat.completions.create(
             model       = self.model,
-            max_tokens  = 2048,
+           max_tokens = 512,
             temperature = 0.1,
             messages    = [
                 {
