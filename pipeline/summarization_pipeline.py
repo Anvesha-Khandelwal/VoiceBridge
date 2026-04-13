@@ -20,13 +20,12 @@ class SummarizationPipeline:
         return self._detailed(text, wc)
 
     def _detailed(self, text: str, wc: int) -> dict:
-        system = (
-            "Analyze this transcript and return ONLY valid JSON with no markdown:\n"
-            '{"overview":"2-3 sentence overview","key_points":["point1","point2","point3"],'
-            '"topics":["topic1","topic2"],"action_items":[],'
-            '"sentiment":"positive or neutral or negative",'
-            '"speaker_intent":"what the speaker was communicating"}'
-        )
+       system = (
+    'You are a JSON generator. Return ONLY this exact JSON structure with no markdown, no explanation:\n'
+    '{"overview":"summary here","key_points":["point1","point2"],'
+    '"topics":["topic1"],"action_items":[],'
+    '"sentiment":"neutral","speaker_intent":"intent here"}'
+)
         raw = self._call(system, f"Summarize this ({wc} words):\n\n{text}", 1024)
         try:
             clean  = re.sub(r"```[a-z]*|```", "", raw).strip()

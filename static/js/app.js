@@ -197,9 +197,9 @@ origText?.addEventListener("input", () => {
   if (charCount) charCount.textContent = len;
   checkBtn();
   clearTimeout(autoTransTimer);
-  if (len > 15) {
-    autoTransTimer = setTimeout(doTranslate, 900);
-  }
+ if (len > 30) {
+    autoTransTimer = setTimeout(doTranslate, 1500);
+}
 });
 
 origText?.addEventListener("keydown", e => {

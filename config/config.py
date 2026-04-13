@@ -7,8 +7,7 @@ class Config:
     # ── Groq ──────────────────────────────────────────────────────────────
     GROQ_API_KEY: str       = os.getenv("GROQ_API_KEY", "")
     # Updated model — llama3-8b-8192 is decommissioned
-    GROQ_MODEL: str         = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-
+    GROQ_MODEL: str         = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
     # ── Whisper ───────────────────────────────────────────────────────────
     WHISPER_MODEL_SIZE: str = os.getenv("WHISPER_MODEL_SIZE", "tiny")
 

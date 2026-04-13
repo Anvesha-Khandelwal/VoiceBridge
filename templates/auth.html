@@ -267,8 +267,13 @@
 
     // ── Google auth placeholder ────────────────────────────────────────────
     function googleAuth() {
-      alert("Google OAuth requires additional setup.\nPlease use email/password to sign in for now.");
-    }
+  const note = document.createElement("div");
+  note.style.cssText = "background:#fef3c7;color:#92400e;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:1rem;text-align:center";
+  note.textContent = "Google login requires OAuth setup. Please use email & password for now.";
+  const btn = event.target.closest("button");
+  btn.parentNode.insertBefore(note, btn.nextSibling);
+  setTimeout(() => note.remove(), 4000);
+}
 
     // ── Helpers ───────────────────────────────────────────────────────────
     function showErr(id, msg) {
