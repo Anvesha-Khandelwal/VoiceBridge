@@ -1,368 +1,397 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VoiceBridge AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --sky:#0ea5e9;--sky-d:#0284c7;--sky-l:#e0f2fe;
-      --bg:#f0f4f8;--surface:#fff;--border:#e2e8f0;
-      --text:#0f172a;--text2:#475569;--text3:#94a3b8;
-      --red:#ef4444;--radius:16px;--radius-sm:10px;
-    }
-    [data-theme="dark"]{
-      --bg:#0f172a;--surface:#1e293b;--border:#334155;
-      --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;--sky-l:#0c2742;
-    }
-    body{
-      font-family:'Outfit',sans-serif;background:var(--bg);
-      min-height:100vh;display:flex;align-items:center;
-      justify-content:center;padding:1rem;transition:background .3s;
-    }
-    .wrap{
-      display:grid;grid-template-columns:1fr 1fr;
-      width:100%;max-width:900px;background:var(--surface);
-      border-radius:var(--radius);overflow:hidden;
-      box-shadow:0 20px 60px rgba(0,0,0,0.15);min-height:560px;
-    }
-    @media(max-width:640px){.wrap{grid-template-columns:1fr}.brand{display:none}}
-
-    .brand{
-      background:linear-gradient(145deg,#0ea5e9 0%,#0284c7 50%,#075985 100%);
-      padding:3rem 2.5rem;display:flex;flex-direction:column;
-      justify-content:center;gap:2rem;color:white;position:relative;overflow:hidden;
-    }
-    .brand::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:rgba(255,255,255,.08);border-radius:50%}
-    .brand::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%}
-    .brand-logo{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
-    .brand-name{font-size:20px;font-weight:700}
-    .brand-sub{font-size:12px;opacity:.75}
-    .brand-feats{position:relative;z-index:1}
-    .brand-feats h2{font-size:22px;font-weight:600;margin-bottom:1.5rem;line-height:1.3}
-    .feat{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;font-size:14px;opacity:.9}
-    .feat-dot{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
-
-    .form-panel{
-      padding:2.5rem 2.5rem;display:flex;flex-direction:column;
-      justify-content:center;background:var(--surface);
-    }
-
-    /* Tab switcher */
-    .auth-tabs{
-      display:flex;border:1px solid var(--border);
-      border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.75rem;
-    }
-    .auth-tab{
-      flex:1;padding:10px;text-align:center;
-      font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;
-      color:var(--text2);background:none;border:none;cursor:pointer;
-      transition:all .15s;
-    }
-    .auth-tab.active{background:var(--sky);color:white;}
-    .auth-tab:hover:not(.active){background:var(--bg);}
-
-    .auth-form{display:none;}
-    .auth-form.active{display:block;}
-
-    .auth-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
-    .auth-sub{font-size:13px;color:var(--text2);margin-bottom:1.5rem}
-
-    .form-group{margin-bottom:.9rem}
-    .form-group label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:5px}
-    .form-group input{
-      width:100%;padding:11px 14px;background:var(--bg);
-      border:1px solid var(--border);border-radius:var(--radius-sm);
-      font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);
-      outline:none;transition:border-color .15s;
-    }
-    .form-group input:focus{border-color:var(--sky)}
-    .form-group input::placeholder{color:var(--text3)}
-
-    .remember-row{display:flex;align-items:center;margin-bottom:1.2rem;font-size:13px;color:var(--text2);}
-    .remember-row label{display:flex;align-items:center;gap:6px;cursor:pointer}
-
-    .btn-auth{
-      width:100%;padding:12px;background:var(--sky);color:white;
-      border:none;border-radius:var(--radius-sm);
-      font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;
-      cursor:pointer;transition:all .15s;margin-bottom:1rem;
-    }
-    .btn-auth:hover{background:var(--sky-d);transform:translateY(-1px)}
-    .btn-auth:active{transform:translateY(0)}
-    .btn-auth:disabled{opacity:.6;cursor:not-allowed;transform:none}
-
-    /* Google button */
-    .btn-google{
-      width:100%;padding:11px;background:var(--surface);color:var(--text);
-      border:1px solid var(--border);border-radius:var(--radius-sm);
-      font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;
-      cursor:pointer;transition:all .15s;margin-bottom:1rem;
-      display:flex;align-items:center;justify-content:center;gap:10px;
-    }
-    .btn-google:hover{background:var(--bg);border-color:var(--sky)}
-
-    .divider{
-      display:flex;align-items:center;gap:10px;
-      margin-bottom:1rem;font-size:12px;color:var(--text3);
-    }
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-
-    .error-msg{
-      background:#fee2e2;color:#dc2626;border-radius:var(--radius-sm);
-      padding:9px 14px;font-size:13px;margin-bottom:.8rem;display:none;
-    }
-    .error-msg.show{display:block}
-
-    .success-msg{
-      background:#dcfce7;color:#16a34a;border-radius:var(--radius-sm);
-      padding:9px 14px;font-size:13px;margin-bottom:.8rem;display:none;
-    }
-    .success-msg.show{display:block}
-
-    .theme-toggle{
-      position:fixed;top:1rem;right:1rem;background:var(--surface);
-      border:1px solid var(--border);border-radius:50%;
-      width:40px;height:40px;cursor:pointer;font-size:18px;
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .15s;z-index:10;
-    }
-    .theme-toggle:hover{transform:scale(1.1)}
-
-    .google-note{
-      font-size:11px;color:var(--text3);text-align:center;
-      margin-top:-.5rem;margin-bottom:.5rem;
-    }
-  </style>
-</head>
-<body>
-  <button class="theme-toggle" id="themeToggle">🌙</button>
-
-  <div class="wrap">
-    <!-- Brand panel -->
-    <div class="brand">
-      <div class="brand-logo">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <rect width="40" height="40" rx="12" fill="rgba(255,255,255,0.2)"/>
-          <path d="M20 8a6 6 0 0 1 6 6v6a6 6 0 0 1-12 0v-6a6 6 0 0 1 6-6z" fill="white"/>
-          <path d="M10 19a1.5 1.5 0 0 1 3 0 7 7 0 0 0 14 0 1.5 1.5 0 0 1 3 0 10 10 0 0 1-9 9.95V31h3a1 1 0 1 1 0 2H16a1 1 0 1 1 0-2h3v-2.05A10 10 0 0 1 10 19z" fill="white" opacity="0.85"/>
-        </svg>
-        <div>
-          <div class="brand-name">VoiceBridge AI</div>
-          <div class="brand-sub">Voice Intelligence Platform</div>
-        </div>
-      </div>
-      <div class="brand-feats">
-        <h2>Turn your voice into intelligence</h2>
-        <div class="feat"><div class="feat-dot">🎤</div><div>Speech recognition in 15+ languages</div></div>
-        <div class="feat"><div class="feat-dot">🌍</div><div>LLM translation via Groq + LLaMA3</div></div>
-        <div class="feat"><div class="feat-dot">📝</div><div>AI summarization with key points</div></div>
-        <div class="feat"><div class="feat-dot">🔍</div><div>Ask questions about transcripts (RAG)</div></div>
-        <div class="feat"><div class="feat-dot">📄</div><div>Export everything as PDF</div></div>
-      </div>
-    </div>
-
-    <!-- Form panel -->
-    <div class="form-panel">
-
-      <!-- Tab switcher -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
-        <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
-      </div>
-
-      <!-- LOGIN FORM -->
-      <div class="auth-form active" id="formLogin">
-        <div class="auth-title">Welcome back 👋</div>
-        <div class="auth-sub">Sign in to your VoiceBridge account</div>
-        <div class="error-msg" id="loginError"></div>
-        <div class="success-msg" id="loginSuccess"></div>
-
-        <button class="btn-google" id="googleLoginBtn" onclick="googleAuth()">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-        <p class="google-note">⚠ Google login requires OAuth setup — use email for now</p>
-
-        <div class="divider">or sign in with email</div>
-
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password"/>
-        </div>
-        <div class="remember-row">
-          <label><input type="checkbox" id="loginRemember"/> Remember me</label>
-        </div>
-        <button class="btn-auth" id="loginBtn">Sign In</button>
-        <div style="text-align:center;font-size:13px;color:var(--text2)">
-          No account? <a href="#" onclick="switchTab('signup')" style="color:var(--sky);font-weight:600">Create one free →</a>
-        </div>
-      </div>
-
-      <!-- SIGNUP FORM -->
-      <div class="auth-form" id="formSignup">
-        <div class="auth-title">Create account ✨</div>
-        <div class="auth-sub">Join VoiceBridge AI — it's free</div>
-        <div class="error-msg" id="signupError"></div>
-        <div class="success-msg" id="signupSuccess"></div>
-
-        <button class="btn-google" onclick="googleAuth()">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Sign up with Google
-        </button>
-        <p class="google-note">⚠ Google login requires OAuth setup — use email for now</p>
-
-        <div class="divider">or sign up with email</div>
-
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" id="signupName" placeholder="Your name" autocomplete="name"/>
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"/>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password"/>
-        </div>
-        <button class="btn-auth" id="signupBtn">Create Account</button>
-        <div style="text-align:center;font-size:13px;color:var(--text2)">
-          Already have an account? <a href="#" onclick="switchTab('login')" style="color:var(--sky);font-weight:600">Sign in →</a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    // ── Theme ──────────────────────────────────────────────────────────────
-    const root = document.documentElement;
-    const tog  = document.getElementById("themeToggle");
-    const saved = localStorage.getItem("vb_theme") || "light";
-    if (saved === "dark") { root.setAttribute("data-theme","dark"); tog.textContent="☀️"; }
-    tog.addEventListener("click", () => {
-      const dark = root.getAttribute("data-theme") === "dark";
-      root.setAttribute("data-theme", dark ? "light" : "dark");
-      tog.textContent = dark ? "🌙" : "☀️";
-      localStorage.setItem("vb_theme", dark ? "light" : "dark");
-    });
-
-    // ── Tab switching ──────────────────────────────────────────────────────
-    function switchTab(tab) {
-      document.getElementById("formLogin").classList.toggle("active", tab === "login");
-      document.getElementById("formSignup").classList.toggle("active", tab === "signup");
-      document.getElementById("tabLogin").classList.toggle("active", tab === "login");
-      document.getElementById("tabSignup").classList.toggle("active", tab === "signup");
-    }
-
-    // Check URL for mode
-    if (window.location.pathname === "/signup") switchTab("signup");
-
-    // ── Google auth placeholder ────────────────────────────────────────────
-    function googleAuth() {
-  const note = document.createElement("div");
-  note.style.cssText = "background:#fef3c7;color:#92400e;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:1rem;text-align:center";
-  note.textContent = "Google login requires OAuth setup. Please use email & password for now.";
-  const btn = event.target.closest("button");
-  btn.parentNode.insertBefore(note, btn.nextSibling);
-  setTimeout(() => note.remove(), 4000);
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VoiceBridge AI — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#0ea5e9;--sky-d:#0369a1;
+  --ink:#0f172a;--ink2:#334155;--ink3:#64748b;--ink4:#94a3b8;
+  --bg:#f1f5f9;--surface:#ffffff;--border:#e2e8f0;--border2:#cbd5e1;
+  --r:14px;--r2:22px;--r3:50px;
+}
+html{height:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(ellipse 800px 500px at 30% 0%,rgba(14,165,233,.07) 0%,transparent 70%),
+    radial-gradient(ellipse 500px 400px at 80% 100%,rgba(99,102,241,.05) 0%,transparent 60%);
 }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
-    function showErr(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.classList.add("show");
-      document.getElementById(id.replace("Error","Success")).classList.remove("show");
-    }
-    function showOk(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.classList.add("show");
-      document.getElementById(id.replace("Success","Error")).classList.remove("show");
-    }
-    function clearMsgs(errId, okId) {
-      document.getElementById(errId).classList.remove("show");
-      document.getElementById(okId).classList.remove("show");
-    }
+.card{
+  display:grid;grid-template-columns:1fr 1fr;
+  width:100%;max-width:860px;
+  background:var(--surface);border-radius:var(--r2);overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.04),0 24px 80px rgba(0,0,0,.1),0 0 0 1px var(--border);
+}
+@media(max-width:640px){.card{grid-template-columns:1fr}.brand-panel{display:none}}
 
-    // ── Login ──────────────────────────────────────────────────────────────
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-      clearMsgs("loginError","loginSuccess");
-      const email    = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-      const remember = document.getElementById("loginRemember").checked;
-      if (!email || !password) return showErr("loginError","Please fill in all fields");
+/* BRAND PANEL */
+.brand-panel{
+  background:var(--ink);
+  padding:3rem 2.5rem;display:flex;flex-direction:column;
+  justify-content:space-between;position:relative;overflow:hidden;
+}
+.brand-panel::before{
+  content:'';position:absolute;top:-120px;right:-80px;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(14,165,233,.15),transparent 70%);
+}
+.brand-panel::after{
+  content:'';position:absolute;bottom:-80px;left:-60px;
+  width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(99,102,241,.12),transparent 70%);
+}
 
-      const btn = document.getElementById("loginBtn");
-      btn.disabled = true; btn.textContent = "Signing in…";
+.brand-top{position:relative;z-index:1}
+.brand-logo{display:flex;align-items:center;gap:10px;margin-bottom:3rem}
+.brand-logo-icon{
+  width:36px;height:36px;border-radius:10px;background:var(--sky);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.brand-logo-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.brand-logo-sub{font-size:11px;color:#64748b;margin-top:1px}
 
-      try {
-        const res  = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify({email, password, remember})
-        });
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          showErr("loginError", data.error || "Login failed");
-          btn.disabled = false; btn.textContent = "Sign In";
-        } else {
-          showOk("loginSuccess","Login successful! Redirecting…");
-          setTimeout(() => window.location.href = "/", 800);
-        }
-      } catch {
-        showErr("loginError","Network error — try again");
-        btn.disabled = false; btn.textContent = "Sign In";
-      }
+.brand-heading{
+  font-size:clamp(1.5rem,3vw,2rem);font-weight:800;
+  color:#fff;letter-spacing:-1px;line-height:1.2;margin-bottom:2rem;
+}
+.brand-heading em{font-style:normal;color:var(--sky)}
+
+.brand-feats{display:flex;flex-direction:column;gap:.85rem}
+.brand-feat{
+  display:flex;align-items:center;gap:12px;
+  padding:.7rem .85rem;border-radius:var(--r);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  transition:all .2s;
+}
+.brand-feat:hover{background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.2)}
+.brand-feat-icon{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.2);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.brand-feat-text{font-size:13px;color:#94a3b8;font-weight:400;line-height:1.4}
+.brand-feat-text strong{color:#e2e8f0;font-weight:600}
+
+.brand-footer{
+  position:relative;z-index:1;
+  margin-top:2.5rem;padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,.07);
+  font-size:11px;color:#475569;
+}
+
+/* FORM PANEL */
+.form-panel{
+  padding:3rem 2.75rem;display:flex;flex-direction:column;justify-content:center;
+}
+
+.tabs{
+  display:flex;background:var(--bg);border-radius:var(--r);
+  padding:4px;margin-bottom:2rem;border:1px solid var(--border);
+}
+.tab-btn{
+  flex:1;padding:9px 12px;border:none;background:none;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  color:var(--ink4);cursor:pointer;border-radius:10px;
+  transition:all .15s;letter-spacing:-.1px;
+}
+.tab-btn.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px var(--border)}
+
+.form-block{display:none}
+.form-block.active{display:block}
+
+.form-head{margin-bottom:1.75rem}
+.form-title{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.6px;margin-bottom:.3rem}
+.form-sub{font-size:13px;color:var(--ink3);line-height:1.5}
+
+.field{margin-bottom:.85rem}
+.field label{
+  display:block;font-size:11px;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:5px;
+}
+.field input{
+  width:100%;padding:11px 14px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r);font-family:'Inter',sans-serif;
+  font-size:14px;color:var(--ink);outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.field input:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(14,165,233,.1);background:var(--surface)}
+.field input::placeholder{color:var(--ink4)}
+
+.row-check{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.2rem;
+}
+.row-check label{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--ink3);cursor:pointer;
+}
+.row-check input[type=checkbox]{
+  width:15px;height:15px;accent-color:var(--sky);cursor:pointer;
+}
+
+.btn-primary{
+  width:100%;padding:12px;background:var(--ink);color:#fff;
+  border:none;border-radius:var(--r3);
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:-.1px;margin-bottom:.85rem;
+}
+.btn-primary:hover{background:var(--sky);transform:translateY(-1px);box-shadow:0 8px 24px rgba(14,165,233,.28)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+
+.btn-google{
+  width:100%;padding:11px 14px;background:var(--surface);
+  border:1px solid var(--border2);border-radius:var(--r3);
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .2s;margin-bottom:.85rem;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn-google:hover{border-color:var(--sky);background:rgba(14,165,233,.03);transform:translateY(-1px)}
+
+.divider{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:.85rem;font-size:11px;font-weight:600;
+  color:var(--ink4);letter-spacing:.06em;text-transform:uppercase;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.toast{
+  border-radius:var(--r);padding:10px 14px;
+  font-size:13px;font-weight:500;margin-bottom:.85rem;
+  display:none;line-height:1.5;
+}
+.toast.show{display:block}
+.toast.err{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+.toast.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+
+.form-footer{
+  text-align:center;font-size:13px;
+  color:var(--ink3);margin-top:.25rem;
+}
+.form-footer a{color:var(--sky);font-weight:600;text-decoration:none}
+.form-footer a:hover{color:var(--sky-d)}
+
+/* back link */
+.back-link{
+  position:fixed;top:1.25rem;left:1.5rem;
+  display:flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--ink3);
+  text-decoration:none;transition:color .15s;
+}
+.back-link:hover{color:var(--ink)}
+.back-link svg{opacity:.6}
+</style>
+</head>
+<body>
+
+<a href="/" class="back-link">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  Back to home
+</a>
+
+<div class="card">
+
+  <!-- BRAND -->
+  <div class="brand-panel">
+    <div class="brand-top">
+      <div class="brand-logo">
+        <div class="brand-logo-icon">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" fill="white"/>
+            <path d="M4 9a1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 1 1 2 0 6 6 0 0 1-5 5.92V17h2a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2h2v-2.08A6 6 0 0 1 4 9z" fill="white" opacity=".8"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-logo-name">VoiceBridge AI</div>
+          <div class="brand-logo-sub">Voice Intelligence Platform</div>
+        </div>
+      </div>
+
+      <div class="brand-heading">Turn your voice<br/>into <em>intelligence</em></div>
+
+      <div class="brand-feats">
+        <div class="brand-feat">
+          <div class="brand-feat-icon">🎤</div>
+          <div class="brand-feat-text"><strong>Transcription</strong> in 15+ languages</div>
+        </div>
+        <div class="brand-feat">
+          <div class="brand-feat-icon">🌍</div>
+          <div class="brand-feat-text"><strong>Context-aware translation</strong> that preserves meaning</div>
+        </div>
+        <div class="brand-feat">
+          <div class="brand-feat-icon">💬</div>
+          <div class="brand-feat-text"><strong>Ask your transcript</strong> — get grounded answers</div>
+        </div>
+        <div class="brand-feat">
+          <div class="brand-feat-icon">📋</div>
+          <div class="brand-feat-text"><strong>Meeting summaries</strong> with action items</div>
+        </div>
+        <div class="brand-feat">
+          <div class="brand-feat-icon">📄</div>
+          <div class="brand-feat-text"><strong>PDF export</strong> — share with your team</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-footer">Free to use · No credit card required</div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-panel">
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign in</button>
+      <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Create account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="form-block active" id="formLogin">
+      <div class="form-head">
+        <div class="form-title">Welcome back</div>
+        <div class="form-sub">Sign in to your VoiceBridge account</div>
+      </div>
+
+      <div class="toast err" id="loginErr"></div>
+      <div class="toast ok" id="loginOk"></div>
+
+      <button class="btn-google" onclick="googleAuth(event)">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="divider">or continue with email</div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password"/>
+      </div>
+
+      <div class="row-check">
+        <label><input type="checkbox" id="loginRemember"/> Remember me</label>
+      </div>
+
+      <button class="btn-primary" id="loginBtn">Sign in →</button>
+      <div class="form-footer">No account? <a href="#" onclick="switchTab('signup')">Create one free →</a></div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div class="form-block" id="formSignup">
+      <div class="form-head">
+        <div class="form-title">Create an account</div>
+        <div class="form-sub">Free forever. No credit card needed.</div>
+      </div>
+
+      <div class="toast err" id="signupErr"></div>
+      <div class="toast ok" id="signupOk"></div>
+
+      <button class="btn-google" onclick="googleAuth(event)">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign up with Google
+      </button>
+
+      <div class="divider">or sign up with email</div>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="signupName" placeholder="Your full name" autocomplete="name"/>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password"/>
+      </div>
+
+      <button class="btn-primary" id="signupBtn" style="margin-top:.35rem">Create account →</button>
+      <div class="form-footer">Already have an account? <a href="#" onclick="switchTab('login')">Sign in →</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    ['login','signup'].forEach(t => {
+      document.getElementById('form'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
+      document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
     });
+  }
+  if(window.location.pathname==='/signup') switchTab('signup');
 
-    // ── Signup ─────────────────────────────────────────────────────────────
-    document.getElementById("signupBtn").addEventListener("click", async () => {
-      clearMsgs("signupError","signupSuccess");
-      const username = document.getElementById("signupName").value.trim();
-      const email    = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-      if (!username || !email || !password) return showErr("signupError","All fields required");
-      if (password.length < 6) return showErr("signupError","Password must be 6+ characters");
+  function googleAuth(e) {
+    const btn = e.currentTarget;
+    const note = document.createElement('div');
+    note.className = 'toast err show';
+    note.style.marginBottom = '.85rem';
+    note.textContent = 'Google login requires OAuth setup. Please use email & password for now.';
+    btn.insertAdjacentElement('afterend', note);
+    setTimeout(() => note.remove(), 4000);
+  }
 
-      const btn = document.getElementById("signupBtn");
-      btn.disabled = true; btn.textContent = "Creating account…";
+  function toast(id, type, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'toast '+type+' show';
+    const other = id.includes('Err')
+      ? id.replace('Err','Ok') : id.replace('Ok','Err');
+    document.getElementById(other).classList.remove('show');
+  }
+  function clearToasts(...ids) { ids.forEach(id => document.getElementById(id).classList.remove('show')); }
 
-      try {
-        const res  = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify({username, email, password})
-        });
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          showErr("signupError", data.error || "Signup failed");
-          btn.disabled = false; btn.textContent = "Create Account";
-        } else {
-          showOk("signupSuccess","Account created! Redirecting…");
-          setTimeout(() => window.location.href = "/", 800);
-        }
-      } catch {
-        showErr("signupError","Network error — try again");
-        btn.disabled = false; btn.textContent = "Create Account";
-      }
-    });
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    clearToasts('loginErr','loginOk');
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const remember = document.getElementById('loginRemember').checked;
+    if (!email || !password) return toast('loginErr','err','Please fill in all fields.');
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      const res = await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password,remember})});
+      const data = await res.json();
+      if (!res.ok || data.error) { toast('loginErr','err',data.error||'Login failed.'); btn.disabled=false; btn.textContent='Sign in →'; }
+      else { toast('loginOk','ok','Login successful! Redirecting…'); setTimeout(()=>window.location.href='/',800); }
+    } catch { toast('loginErr','err','Network error — please try again.'); btn.disabled=false; btn.textContent='Sign in →'; }
+  });
 
-    // Enter key support
-    document.addEventListener("keydown", e => {
-      if (e.key !== "Enter") return;
-      const loginActive = document.getElementById("formLogin").classList.contains("active");
-      if (loginActive) document.getElementById("loginBtn").click();
-      else document.getElementById("signupBtn").click();
-    });
-  </script>
+  document.getElementById('signupBtn').addEventListener('click', async () => {
+    clearToasts('signupErr','signupOk');
+    const username = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    if (!username||!email||!password) return toast('signupErr','err','All fields are required.');
+    if (password.length<6) return toast('signupErr','err','Password must be at least 6 characters.');
+    const btn = document.getElementById('signupBtn');
+    btn.disabled=true; btn.textContent='Creating account…';
+    try {
+      const res = await fetch('/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
+      const data = await res.json();
+      if (!res.ok||data.error) { toast('signupErr','err',data.error||'Signup failed.'); btn.disabled=false; btn.textContent='Create account →'; }
+      else { toast('signupOk','ok','Account created! Redirecting…'); setTimeout(()=>window.location.href='/',800); }
+    } catch { toast('signupErr','err','Network error — please try again.'); btn.disabled=false; btn.textContent='Create account →'; }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const loginActive = document.getElementById('formLogin').classList.contains('active');
+    document.getElementById(loginActive ? 'loginBtn' : 'signupBtn').click();
+  });
+</script>
 </body>
 </html>
