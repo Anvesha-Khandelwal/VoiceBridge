@@ -20,12 +20,13 @@ class SummarizationPipeline:
         return self._detailed(text, wc)
 
     def _detailed(self, text: str, wc: int) -> dict:
-       system = (
-    'You are a JSON generator. Return ONLY this exact JSON structure with no markdown, no explanation:\n'
-    '{"overview":"summary here","key_points":["point1","point2"],'
-    '"topics":["topic1"],"action_items":[],'
-    '"sentiment":"neutral","speaker_intent":"intent here"}'
-)
+        system = (
+            'You are a JSON generator. Return ONLY this exact JSON structure '
+            'with no markdown, no explanation, no code blocks:\n'
+            '{"overview":"summary here","key_points":["point1","point2"],'
+            '"topics":["topic1"],"action_items":[],'
+            '"sentiment":"neutral","speaker_intent":"intent here"}'
+        )
         raw = self._call(system, f"Summarize this ({wc} words):\n\n{text}", 1024)
         try:
             clean  = re.sub(r"```[a-z]*|```", "", raw).strip()
@@ -35,13 +36,13 @@ class SummarizationPipeline:
             return result
         except json.JSONDecodeError:
             return {
-                "overview":     raw,
-                "key_points":   [],
-                "topics":       [],
-                "action_items": [],
-                "sentiment":    "neutral",
-                "word_count":   wc,
-                "style":        "detailed"
+                "overview":      raw,
+                "key_points":    [],
+                "topics":        [],
+                "action_items":  [],
+                "sentiment":     "neutral",
+                "word_count":    wc,
+                "style":         "detailed"
             }
 
     def _brief(self, text: str, wc: int) -> dict:
