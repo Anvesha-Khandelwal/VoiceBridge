@@ -245,3 +245,43 @@ body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text);
 .loading-spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--sky); border-radius:50%; animation:spin .7s linear infinite; }
 @keyframes spin { to{transform:rotate(360deg)} }
 .loading-text { font-size:13px; color:var(--text2); font-family:'DM Mono',monospace; }
+/* ── Add these to the END of static/css/style.css ─────────────────────── */
+
+/* Use case grid */
+.usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.usecase-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.usecase-card:hover {
+  border-color: var(--sky);
+  background: var(--sky-l);
+  transform: translateY(-2px);
+}
+
+.usecase-card.active {
+  border-color: var(--sky);
+  background: var(--sky-l);
+  box-shadow: 0 0 0 3px rgba(14,165,233,.12);
+}
+
+.usecase-icon  { font-size: 22px; line-height: 1; }
+.usecase-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.usecase-sub   { font-size: 11px; color: var(--text3); line-height: 1.3; }

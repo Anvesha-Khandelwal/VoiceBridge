@@ -25,7 +25,6 @@
       min-height:100vh;padding:1rem;
       transition:background .3s;
     }
-
     .card{
       display:grid;grid-template-columns:1fr 1fr;
       width:100%;max-width:960px;min-height:580px;
@@ -38,12 +37,12 @@
       .brand-panel{display:none}
     }
 
-    /* ── Brand panel ──────────────────────────────────────── */
+    /* Brand */
     .brand-panel{
       background:#0a1628;
       padding:3rem 2.5rem;
-      display:flex;flex-direction:column;justify-content:space-between;
-      position:relative;overflow:hidden;
+      display:flex;flex-direction:column;justify-content:center;
+      position:relative;overflow:hidden;gap:2rem;
     }
     .brand-panel::before{
       content:'';position:absolute;top:-100px;right:-100px;
@@ -55,35 +54,29 @@
       width:300px;height:300px;border-radius:50%;
       background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);
     }
-
-    .brand-top{position:relative;z-index:1}
     .brand-logo{
       display:flex;align-items:center;gap:10px;
-      margin-bottom:2.5rem;
+      position:relative;z-index:1;
     }
     .brand-logo-text{font-size:18px;font-weight:700;color:white}
     .brand-logo-sub{font-size:11px;color:#64748b;margin-top:1px}
-
     .brand-headline{
       font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;
       color:white;line-height:1.2;letter-spacing:-0.5px;
-      margin-bottom:1.5rem;
+      position:relative;z-index:1;
     }
     .brand-headline span{color:#0ea5e9}
-
-    .brand-features{display:flex;flex-direction:column;gap:10px}
+    .brand-features{display:flex;flex-direction:column;gap:8px;position:relative;z-index:1}
     .brand-feat{
       display:flex;align-items:center;gap:12px;
-      padding:12px 14px;border-radius:10px;
+      padding:11px 14px;border-radius:10px;
       background:rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.06);
-      transition:background .15s;
     }
-    .brand-feat:hover{background:rgba(255,255,255,.07)}
     .feat-icon{
-      width:32px;height:32px;border-radius:8px;
+      width:30px;height:30px;border-radius:7px;
       display:flex;align-items:center;justify-content:center;
-      font-size:15px;flex-shrink:0;
+      font-size:14px;flex-shrink:0;
     }
     .feat-icon.blue{background:rgba(14,165,233,.2)}
     .feat-icon.purple{background:rgba(139,92,246,.2)}
@@ -93,28 +86,12 @@
     .feat-text{font-size:13px;color:#cbd5e1;line-height:1.4}
     .feat-text strong{color:white;font-weight:600}
 
-    .brand-bottom{
-      position:relative;z-index:1;
-      padding-top:2rem;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-    .tech-tags{display:flex;flex-wrap:wrap;gap:6px}
-    .tech-tag{
-      font-size:10px;font-weight:600;
-      font-family:monospace;
-      padding:3px 9px;border-radius:20px;
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.1);
-      color:#94a3b8;letter-spacing:.03em;
-    }
-
-    /* ── Form panel ───────────────────────────────────────── */
+    /* Form */
     .form-panel{
       padding:2.5rem 3rem;
       display:flex;flex-direction:column;justify-content:center;
       background:var(--surface);
     }
-
     .auth-tabs{
       display:flex;background:var(--bg);
       border-radius:10px;padding:4px;
@@ -131,10 +108,8 @@
       background:var(--surface);color:var(--text);
       box-shadow:0 1px 4px rgba(0,0,0,.08);
     }
-
     .auth-form{display:none}
     .auth-form.active{display:block}
-
     .form-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
     .form-sub{font-size:13px;color:var(--text3);margin-bottom:1.5rem}
 
@@ -145,18 +120,28 @@
       font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
       cursor:pointer;transition:all .15s;
       display:flex;align-items:center;justify-content:center;gap:10px;
-      margin-bottom:1rem;
+      margin-bottom:.5rem;
     }
-    .google-btn:hover{border-color:var(--sky);background:#f8fafc}
+    .google-btn:hover{border-color:var(--sky)}
 
-    .or-divider{
+    /* OAuth note — HIDDEN by default, only shows on click */
+    .oauth-note{
+      background:#fefce8;color:#92400e;
+      border:1px solid #fde68a;border-radius:8px;
+      padding:8px 12px;font-size:12px;
+      margin-bottom:.75rem;
+      display:none;  /* HIDDEN by default */
+      animation:slideDown .2s ease;
+    }
+    .oauth-note.visible{display:block}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+    .or-div{
       display:flex;align-items:center;gap:10px;
       margin-bottom:1.25rem;
       font-size:12px;color:var(--text3);
     }
-    .or-divider::before,.or-divider::after{
-      content:'';flex:1;height:1px;background:var(--border);
-    }
+    .or-div::before,.or-div::after{content:'';flex:1;height:1px;background:var(--border)}
 
     .form-group{margin-bottom:1rem}
     .form-label{
@@ -183,7 +168,6 @@
       margin-bottom:1.25rem;
       font-size:13px;color:var(--text2);cursor:pointer;
     }
-
     .submit-btn{
       width:100%;padding:12px;
       background:var(--sky);color:white;border:none;
@@ -191,18 +175,13 @@
       font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
       cursor:pointer;transition:all .15s;
       margin-bottom:1.25rem;
-      display:flex;align-items:center;justify-content:center;gap:8px;
     }
     .submit-btn:hover{background:var(--sky-d);transform:translateY(-1px)}
     .submit-btn:active{transform:translateY(0)}
     .submit-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
-    .switch-text{
-      text-align:center;font-size:13px;color:var(--text2);
-    }
-    .switch-text a{
-      color:var(--sky);font-weight:600;text-decoration:none;cursor:pointer;
-    }
+    .switch-text{text-align:center;font-size:13px;color:var(--text2)}
+    .switch-text a{color:var(--sky);font-weight:600;text-decoration:none;cursor:pointer}
 
     .error-box{
       background:#fef2f2;color:#b91c1c;
@@ -211,7 +190,6 @@
       margin-bottom:1rem;display:none;
     }
     .error-box.show{display:block}
-
     .success-box{
       background:#f0fdf4;color:#15803d;
       border:1px solid #bbf7d0;border-radius:var(--radius);
@@ -220,18 +198,6 @@
     }
     .success-box.show{display:block}
 
-    /* OAuth tooltip — NOT a permanent red box */
-    .oauth-tooltip{
-      background:#fefce8;color:#92400e;
-      border:1px solid #fde68a;border-radius:8px;
-      padding:8px 12px;font-size:12px;
-      margin-top:8px;display:none;
-      animation:fadeIn .2s ease;
-    }
-    .oauth-tooltip.show{display:block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-
-    /* Theme toggle */
     .theme-btn{
       position:fixed;top:1rem;right:1rem;
       background:var(--surface);border:1px solid var(--border);
@@ -251,62 +217,48 @@
 
     <!-- Brand panel -->
     <div class="brand-panel">
-      <div class="brand-top">
-        <div class="brand-logo">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="10" fill="#0ea5e9"/>
-            <path d="M18 7a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0v-6a5 5 0 0 1 5-5z" fill="white"/>
-            <path d="M10 17a1.5 1.5 0 0 1 3 0 5 5 0 0 0 10 0 1.5 1.5 0 0 1 3 0 8 8 0 0 1-7 7.94V27h3a1 1 0 1 1 0 2H14a1 1 0 1 1 0-2h3v-2.06A8 8 0 0 1 10 17z" fill="white" opacity="0.85"/>
-          </svg>
-          <div>
-            <div class="brand-logo-text">VoiceBridge AI</div>
-            <div class="brand-logo-sub">Voice Intelligence Platform</div>
-          </div>
-        </div>
-
-        <div class="brand-headline">
-          Turn your voice<br/>into <span>intelligence</span>
-        </div>
-
-        <div class="brand-features">
-          <div class="brand-feat">
-            <div class="feat-icon blue">🎤</div>
-            <div class="feat-text"><strong>Transcription</strong> in 15+ languages</div>
-          </div>
-          <div class="brand-feat">
-            <div class="feat-icon purple">🌍</div>
-            <div class="feat-text"><strong>Context-aware translation</strong> that preserves meaning</div>
-          </div>
-          <div class="brand-feat">
-            <div class="feat-icon green">🔍</div>
-            <div class="feat-text"><strong>Ask your transcript</strong> — get grounded answers</div>
-          </div>
-          <div class="brand-feat">
-            <div class="feat-icon amber">📝</div>
-            <div class="feat-text"><strong>Meeting summaries</strong> with action items</div>
-          </div>
-          <div class="brand-feat">
-            <div class="feat-icon pink">📄</div>
-            <div class="feat-text"><strong>PDF export</strong> — share with your team</div>
-          </div>
+      <div class="brand-logo">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="10" fill="#0ea5e9"/>
+          <path d="M18 7a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0v-6a5 5 0 0 1 5-5z" fill="white"/>
+          <path d="M10 17a1.5 1.5 0 0 1 3 0 5 5 0 0 0 10 0 1.5 1.5 0 0 1 3 0 8 8 0 0 1-7 7.94V27h3a1 1 0 1 1 0 2H14a1 1 0 1 1 0-2h3v-2.06A8 8 0 0 1 10 17z" fill="white" opacity="0.85"/>
+        </svg>
+        <div>
+          <div class="brand-logo-text">VoiceBridge AI</div>
+          <div class="brand-logo-sub">Voice Intelligence Platform</div>
         </div>
       </div>
 
-      <div class="brand-bottom">
-        <div class="tech-tags">
-          <span class="tech-tag">Whisper ASR</span>
-          <span class="tech-tag">LLaMA3</span>
-          <span class="tech-tag">FAISS</span>
-          <span class="tech-tag">RAG</span>
-          <span class="tech-tag">Flask</span>
-          <span class="tech-tag">Free forever</span>
+      <div class="brand-headline">
+        Turn your voice<br/>into <span>intelligence</span>
+      </div>
+
+      <div class="brand-features">
+        <div class="brand-feat">
+          <div class="feat-icon blue">🎤</div>
+          <div class="feat-text"><strong>Transcription</strong> in 15+ languages</div>
+        </div>
+        <div class="brand-feat">
+          <div class="feat-icon purple">🌍</div>
+          <div class="feat-text"><strong>Context-aware translation</strong> that preserves meaning</div>
+        </div>
+        <div class="brand-feat">
+          <div class="feat-icon green">🔍</div>
+          <div class="feat-text"><strong>Ask your transcript</strong> — get grounded answers</div>
+        </div>
+        <div class="brand-feat">
+          <div class="feat-icon amber">📝</div>
+          <div class="feat-text"><strong>Meeting summaries</strong> with action items</div>
+        </div>
+        <div class="brand-feat">
+          <div class="feat-icon pink">📄</div>
+          <div class="feat-text"><strong>PDF export</strong> — share with your team</div>
         </div>
       </div>
     </div>
 
     <!-- Form panel -->
     <div class="form-panel">
-
       <div class="auth-tabs">
         <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
         <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
@@ -316,11 +268,10 @@
       <div class="auth-form active" id="formLogin">
         <div class="form-title">Welcome back 👋</div>
         <div class="form-sub">Sign in to continue to VoiceBridge</div>
-
         <div class="error-box"   id="loginError"></div>
         <div class="success-box" id="loginSuccess"></div>
 
-        <button class="google-btn" id="googleLoginBtn" onclick="showOAuthNote('googleLoginNote')">
+        <button class="google-btn" onclick="showOAuthNote('noteLogin')">
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -329,26 +280,25 @@
           </svg>
           Continue with Google
         </button>
-        <div class="oauth-tooltip" id="googleLoginNote">
-          Google OAuth requires additional setup. Please use email & password for now.
+        <!-- HIDDEN by default — only shows when Google button is clicked -->
+        <div class="oauth-note" id="noteLogin">
+          Google sign-in requires OAuth setup. Please use email & password for now.
         </div>
 
-        <div class="or-divider">or sign in with email</div>
+        <div class="or-div">or sign in with email</div>
 
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input class="form-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+          <input class="form-input" type="email" id="loginEmail" placeholder="you@example.com"/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input class="form-input" type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password"/>
+          <input class="form-input" type="password" id="loginPassword" placeholder="Your password"/>
         </div>
         <label class="remember-row">
           <input type="checkbox" id="loginRemember"/> Remember me
         </label>
-        <button class="submit-btn" id="loginBtn">
-          Sign In →
-        </button>
+        <button class="submit-btn" id="loginBtn">Sign In →</button>
         <div class="switch-text">
           No account? <a onclick="switchTab('signup')">Create one free →</a>
         </div>
@@ -358,11 +308,10 @@
       <div class="auth-form" id="formSignup">
         <div class="form-title">Create account ✨</div>
         <div class="form-sub">Free forever. No credit card needed.</div>
-
         <div class="error-box"   id="signupError"></div>
         <div class="success-box" id="signupSuccess"></div>
 
-        <button class="google-btn" onclick="showOAuthNote('googleSignupNote')">
+        <button class="google-btn" onclick="showOAuthNote('noteSignup')">
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -371,32 +320,29 @@
           </svg>
           Sign up with Google
         </button>
-        <div class="oauth-tooltip" id="googleSignupNote">
-          Google OAuth requires additional setup. Please use email & password for now.
+        <div class="oauth-note" id="noteSignup">
+          Google sign-in requires OAuth setup. Please use email & password for now.
         </div>
 
-        <div class="or-divider">or sign up with email</div>
+        <div class="or-div">or sign up with email</div>
 
         <div class="form-group">
           <label class="form-label">Full Name</label>
-          <input class="form-input" type="text" id="signupName" placeholder="Your name" autocomplete="name"/>
+          <input class="form-input" type="text" id="signupName" placeholder="Your name"/>
         </div>
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input class="form-input" type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"/>
+          <input class="form-input" type="email" id="signupEmail" placeholder="you@example.com"/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input class="form-input" type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password"/>
+          <input class="form-input" type="password" id="signupPassword" placeholder="Min. 6 characters"/>
         </div>
-        <button class="submit-btn" id="signupBtn">
-          Create Account →
-        </button>
+        <button class="submit-btn" id="signupBtn">Create Account →</button>
         <div class="switch-text">
           Already have an account? <a onclick="switchTab('login')">Sign in →</a>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -404,8 +350,8 @@
     // Theme
     const root = document.documentElement;
     const themeBtn = document.getElementById("themeBtn");
-    const savedTheme = localStorage.getItem("vb_theme") || "light";
-    if (savedTheme === "dark") { root.setAttribute("data-theme","dark"); themeBtn.textContent="☀️"; }
+    const saved = localStorage.getItem("vb_theme") || "light";
+    if (saved === "dark") { root.setAttribute("data-theme","dark"); themeBtn.textContent="☀️"; }
     themeBtn.addEventListener("click", () => {
       const dark = root.getAttribute("data-theme") === "dark";
       root.setAttribute("data-theme", dark ? "light" : "dark");
@@ -413,29 +359,24 @@
       localStorage.setItem("vb_theme", dark ? "light" : "dark");
     });
 
-    // Tab switching
+    // Tab switch
     function switchTab(tab) {
       ["login","signup"].forEach(t => {
-        document.getElementById("form"   + t.charAt(0).toUpperCase() + t.slice(1))
-                .classList.toggle("active", t === tab);
-        document.getElementById("tab"   + t.charAt(0).toUpperCase() + t.slice(1))
-                .classList.toggle("active", t === tab);
+        const cap = t.charAt(0).toUpperCase() + t.slice(1);
+        document.getElementById("form" + cap).classList.toggle("active", t === tab);
+        document.getElementById("tab"  + cap).classList.toggle("active", t === tab);
       });
-      // Hide all tooltips when switching
-      document.querySelectorAll(".oauth-tooltip").forEach(el => el.classList.remove("show"));
+      document.querySelectorAll(".oauth-note").forEach(el => el.classList.remove("visible"));
     }
-
-    // Auto switch based on URL
     if (window.location.pathname === "/signup") switchTab("signup");
 
-    // Google OAuth tooltip (NOT a permanent red box — only shows on click)
+    // OAuth note — ONLY shows on click, auto-hides after 4s
     function showOAuthNote(id) {
       const el = document.getElementById(id);
-      el.classList.add("show");
-      setTimeout(() => el.classList.remove("show"), 4000);
+      el.classList.add("visible");
+      setTimeout(() => el.classList.remove("visible"), 4000);
     }
 
-    // Helpers
     function showErr(id, msg) {
       const el = document.getElementById(id);
       el.textContent = msg; el.classList.add("show");
@@ -446,19 +387,13 @@
       el.textContent = msg; el.classList.add("show");
       document.getElementById(id.replace("Success","Error")).classList.remove("show");
     }
-    function clearMsg(errId, okId) {
-      document.getElementById(errId).classList.remove("show");
-      document.getElementById(okId).classList.remove("show");
-    }
 
     // Login
     document.getElementById("loginBtn").addEventListener("click", async () => {
-      clearMsg("loginError","loginSuccess");
       const email    = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
       const remember = document.getElementById("loginRemember").checked;
       if (!email || !password) return showErr("loginError","Please fill in all fields");
-
       const btn = document.getElementById("loginBtn");
       btn.disabled = true; btn.textContent = "Signing in…";
       try {
@@ -482,13 +417,11 @@
 
     // Signup
     document.getElementById("signupBtn").addEventListener("click", async () => {
-      clearMsg("signupError","signupSuccess");
       const username = document.getElementById("signupName").value.trim();
       const email    = document.getElementById("signupEmail").value.trim();
       const password = document.getElementById("signupPassword").value;
       if (!username || !email || !password) return showErr("signupError","All fields required");
       if (password.length < 6) return showErr("signupError","Password must be 6+ characters");
-
       const btn = document.getElementById("signupBtn");
       btn.disabled = true; btn.textContent = "Creating account…";
       try {
@@ -510,11 +443,9 @@
       }
     });
 
-    // Enter key
     document.addEventListener("keydown", e => {
       if (e.key !== "Enter") return;
-      const loginActive = document.getElementById("formLogin").classList.contains("active");
-      loginActive
+      document.getElementById("formLogin").classList.contains("active")
         ? document.getElementById("loginBtn").click()
         : document.getElementById("signupBtn").click();
     });

@@ -910,5 +910,100 @@ $("exportHistoryBtn")?.addEventListener("click", () => {
 // ── Keep-alive ping ───────────────────────────────────────────────────────
 setInterval(() => fetch("/ping").catch(() => {}), 14 * 60 * 1000);
 
+// ══════════════════════════════════════════════════════════════════════════
+// ADD THIS to static/js/app.js
+// Replace your existing RAG section with this upgraded version
+// that has use-case-aware suggested questions
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Use case suggested questions ──────────────────────────────────────────
+const USECASE_QUESTIONS = {
+  interview: [
+    "What are my strongest skills mentioned?",
+    "What experience do I have with leadership?",
+    "What projects should I highlight?",
+    "What weaknesses are mentioned in my notes?"
+  ],
+  lecture: [
+    "What are the main concepts covered?",
+    "Explain the key formula or theorem",
+    "What are the important definitions?",
+    "What topics might appear in an exam?"
+  ],
+  meeting: [
+    "What decisions were made?",
+    "What are the action items and who owns them?",
+    "What were the main blockers discussed?",
+    "What is the next meeting about?"
+  ],
+  research: [
+    "What is the main hypothesis or thesis?",
+    "What methodology was used?",
+    "What were the key findings?",
+    "What limitations were mentioned?"
+  ],
+  legal: [
+    "What are the key obligations of each party?",
+    "Are there any penalty or termination clauses?",
+    "What is the duration of this agreement?",
+    "What are the confidentiality requirements?"
+  ],
+  custom: [
+    "What are the key points?",
+    "Summarize the main topics",
+    "What action items were mentioned?",
+    "What was the conclusion?"
+  ]
+};
+
+let currentUseCase = "interview";
+
+// Use case card click handler
+document.querySelectorAll(".usecase-card").forEach(card => {
+  card.addEventListener("click", () => {
+    document.querySelectorAll(".usecase-card").forEach(c => c.classList.remove("active"));
+    card.classList.add("active");
+    currentUseCase = card.dataset.case;
+    updateSuggestedQuestions();
+
+    // Update textarea placeholder
+    const placeholders = {
+      interview: "Paste your CV, cover letter, or interview preparation notes…",
+      lecture:   "Paste your lecture notes, slides transcript, or study material…",
+      meeting:   "Paste your meeting transcript or notes…",
+      research:  "Paste the research paper abstract or full text…",
+      legal:     "Paste the contract or legal document text…",
+      custom:    "Paste any text you want to query…"
+    };
+    const ri = document.getElementById("ragInput");
+    if (ri) ri.placeholder = placeholders[currentUseCase] || "Paste content here…";
+  });
+});
+
+function updateSuggestedQuestions() {
+  const qs = USECASE_QUESTIONS[currentUseCase] || USECASE_QUESTIONS.custom;
+  ["sq1","sq2","sq3","sq4"].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = qs[i] || "";
+      el.style.display = qs[i] ? "inline-block" : "none";
+    }
+  });
+}
+
+// Init suggested questions
+updateSuggestedQuestions();
+
+// Wire up sq buttons
+document.querySelectorAll(".sq-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const rq = document.getElementById("ragQuestion");
+    if (rq && btn.textContent) {
+      rq.value = btn.textContent;
+      doRagAsk();
+    }
+  });
+});
+
 // ── Init ──────────────────────────────────────────────────────────────────
 setStatus("Ready — type, speak, or upload audio");

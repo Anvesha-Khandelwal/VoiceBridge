@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VoiceBridge AI — Translate</title>
+  <title>VoiceBridge AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/static/css/style.css"/>
 </head>
 <body>
 
-  <!-- ── Header ─────────────────────────────────────────────────────── -->
   <header class="header">
     <div class="header-left">
       <a href="/dashboard" class="logo-link">
@@ -26,7 +25,7 @@
       <a href="/dashboard" class="nav-icon-btn" title="Dashboard">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
       </a>
-      <button class="theme-btn" id="themeBtn" title="Toggle dark mode">🌙</button>
+      <button class="theme-btn" id="themeBtn">🌙</button>
       <div class="user-menu" id="userMenu">
         <div class="user-avatar" id="userAvatar">{{ user.username[0]|upper }}</div>
         <div class="user-dropdown" id="userDropdown">
@@ -42,14 +41,13 @@
     </div>
   </header>
 
-  <!-- ── Tab bar ────────────────────────────────────────────────────── -->
   <div class="tab-bar">
     <button class="tab active" data-tab="translate">Translate</button>
     <button class="tab" data-tab="document">Document</button>
     <button class="tab" data-tab="batch">Batch</button>
     <button class="tab" data-tab="summarize">Summarize</button>
     <button class="tab" data-tab="rag">
-      Ask Transcript
+      Smart Q&amp;A
       <span class="tab-badge">RAG</span>
     </button>
     <button class="tab" data-tab="meeting">Meeting Notes</button>
@@ -58,12 +56,8 @@
 
   <main class="container">
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- TRANSLATE TAB                                                  -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ TRANSLATE ══════════════════════════════════════════ -->
     <div class="tab-panel active" id="tab-translate">
-
-      <!-- Language bar -->
       <div class="lang-bar">
         <div class="lang-group">
           <label>Speaking in</label>
@@ -85,7 +79,7 @@
             <option value="ko-KR" data-code="ko">Korean (한국어)</option>
           </select>
         </div>
-        <button class="swap-btn" id="swapBtn" title="Swap languages">⇄</button>
+        <button class="swap-btn" id="swapBtn">⇄</button>
         <div class="lang-group">
           <label>Translate to</label>
           <select id="toLang">
@@ -107,26 +101,20 @@
         </div>
       </div>
 
-      <!-- Text panels -->
       <div class="panels">
-        <!-- Original -->
         <div class="panel" id="origPanel">
           <div class="panel-header">
             <span class="panel-label">Original</span>
             <div class="panel-header-right">
-              <div class="wave-viz" id="waveViz">
-                <span></span><span></span><span></span><span></span><span></span>
-              </div>
+              <div class="wave-viz" id="waveViz"><span></span><span></span><span></span><span></span><span></span></div>
               <span class="char-count" id="charCount">0</span>
             </div>
           </div>
-          <div class="panel-body" id="origText"
-               contenteditable="true"
-               data-placeholder="Speak or type here…"></div>
+          <div class="panel-body" id="origText" contenteditable="true" data-placeholder="Speak or type here…"></div>
           <div class="panel-footer">
             <div class="footer-left">
-              <button class="btn-ghost sm" id="detectLangBtn" title="Auto-detect language">🔎 Detect</button>
-              <button class="btn-ghost sm" id="improveBtn" title="Fix grammar & clarity">✨ Improve</button>
+              <button class="btn-ghost sm" id="detectLangBtn">🔎 Detect</button>
+              <button class="btn-ghost sm" id="improveBtn">✨ Improve</button>
             </div>
             <div class="footer-right">
               <button class="btn-ghost sm" id="clearBtn">Clear</button>
@@ -137,8 +125,7 @@
           </div>
         </div>
 
-        <!-- Translation -->
-        <div class="panel" id="transPanel">
+        <div class="panel">
           <div class="panel-header">
             <span class="panel-label">Translation</span>
             <div class="panel-header-right">
@@ -146,15 +133,14 @@
               <div class="quality-badge hidden" id="qualityBadge"></div>
             </div>
           </div>
-          <div class="panel-body" id="transText"
-               data-placeholder="Translation appears here…"></div>
+          <div class="panel-body" id="transText" data-placeholder="Translation appears here…"></div>
           <div class="panel-footer">
             <div class="footer-left">
               <span class="latency-tag" id="latencyTag"></span>
             </div>
             <div class="footer-right">
               <button class="btn-ghost sm" id="speakTransBtn">▶ Speak</button>
-              <button class="btn-ghost sm" id="sendToRagBtn">→ RAG</button>
+              <button class="btn-ghost sm" id="sendToRagBtn">→ Q&amp;A</button>
               <button class="btn-ghost sm" id="exportPdfBtn">⬇ PDF</button>
               <button class="btn-ghost sm" id="copyTransBtn">Copy</button>
             </div>
@@ -162,10 +148,9 @@
         </div>
       </div>
 
-      <!-- Controls -->
       <div class="controls">
         <div class="record-area">
-          <button class="record-btn" id="recordBtn" title="Click to start/stop recording">
+          <button class="record-btn" id="recordBtn">
             <span class="record-pulse"></span>
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
               <path d="M14 4a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V8a4 4 0 0 1 4-4z" fill="currentColor"/>
@@ -176,20 +161,13 @@
         </div>
         <div class="translate-actions">
           <button class="btn-primary" id="translateBtn" disabled>
-            Translate
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            Translate →
           </button>
-          <button class="btn-outline" id="confidenceBtn" disabled title="Translate with confidence score & ambiguity analysis">
-            + Confidence
-          </button>
+          <button class="btn-outline" id="confidenceBtn" disabled>+ Confidence</button>
         </div>
       </div>
-
       <div class="status-bar" id="statusBar"></div>
 
-      <!-- Confidence result (hidden until used) -->
       <div id="confidenceResult" class="confidence-card hidden">
         <div class="confidence-header">
           <span class="confidence-title">Translation Analysis</span>
@@ -204,33 +182,56 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- DOCUMENT TRANSLATOR                                            -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ DOCUMENT ════════════════════════════════════════════ -->
     <div class="tab-panel" id="tab-document">
       <div class="feature-intro">
         <div class="intro-icon">📄</div>
         <div>
           <div class="intro-title">Document Translator</div>
-          <div class="intro-desc">Upload a .txt file and translate the entire document. Results export as PDF.</div>
+          <div class="intro-desc">Upload a .txt file. Large documents are split into chunks and translated automatically.</div>
         </div>
       </div>
       <div class="doc-upload-area" id="docDropZone">
         <div class="doc-upload-icon">📂</div>
         <div class="doc-upload-title">Drop a .txt file here or click to browse</div>
-        <div class="doc-upload-sub">Supports .txt files up to 10,000 words</div>
+        <div class="doc-upload-sub">Handles large documents via chunked translation</div>
         <input type="file" id="docFileInput" accept=".txt" style="display:none"/>
       </div>
       <div id="docPreview" class="hidden">
         <div class="doc-meta" id="docMeta"></div>
+        <div class="batch-lang-bar" style="margin-bottom:1rem">
+          <select id="docFromLang" class="lang-select-sm">
+            <option value="auto">Auto-detect</option>
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="ja">Japanese</option>
+            <option value="zh">Chinese</option>
+            <option value="ar">Arabic</option>
+          </select>
+          <span style="color:var(--text3)">→</span>
+          <select id="docToLang" class="lang-select-sm">
+            <option value="en" selected>English</option>
+            <option value="hi">Hindi</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="ja">Japanese</option>
+            <option value="zh">Chinese</option>
+          </select>
+        </div>
         <div class="panels" style="margin-bottom:1rem">
           <div class="panel">
-            <div class="panel-header"><span class="panel-label">Original Document</span></div>
+            <div class="panel-header"><span class="panel-label">Original</span></div>
             <div class="panel-body" id="docOrigText" style="max-height:300px;overflow-y:auto;font-size:13px"></div>
           </div>
           <div class="panel">
-            <div class="panel-header"><span class="panel-label">Translated Document</span><span class="model-tag">Groq LLaMA3</span></div>
-            <div class="panel-body" id="docTransText" style="max-height:300px;overflow-y:auto;font-size:13px" data-placeholder="Click Translate Document to start…"></div>
+            <div class="panel-header"><span class="panel-label">Translated</span><span class="model-tag">Groq LLaMA3</span></div>
+            <div class="panel-body" id="docTransText" style="max-height:300px;overflow-y:auto;font-size:13px" data-placeholder="Click Translate to start…"></div>
           </div>
         </div>
         <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -240,15 +241,13 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- BATCH TRANSLATE                                                -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ BATCH ═══════════════════════════════════════════════ -->
     <div class="tab-panel" id="tab-batch">
       <div class="feature-intro">
         <div class="intro-icon">⚡</div>
         <div>
           <div class="intro-title">Batch Translate</div>
-          <div class="intro-desc">Paste multiple sentences (one per line). All translated at once and exported as a table.</div>
+          <div class="intro-desc">Paste multiple sentences (one per line). Translate all at once and export as CSV.</div>
         </div>
       </div>
       <div class="batch-lang-bar">
@@ -277,9 +276,9 @@
         </select>
       </div>
       <textarea id="batchInput"
-                placeholder="Enter one sentence per line:&#10;नमस्ते आप कैसे हो&#10;मेरा नाम अन्वेषा है&#10;आज मौसम अच्छा है"
-                rows="8"
-                style="width:100%;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);outline:none;resize:vertical;color:var(--text);background:var(--surface);margin-bottom:1rem"></textarea>
+        placeholder="Enter one sentence per line:&#10;नमस्ते आप कैसे हो&#10;मेरा नाम अन्वेषा है&#10;आज मौसम अच्छा है"
+        rows="8"
+        style="width:100%;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);outline:none;resize:vertical;color:var(--text);background:var(--surface);margin-bottom:1rem"></textarea>
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:1.5rem">
         <button class="btn-primary" id="batchTranslateBtn">Translate All →</button>
       </div>
@@ -289,7 +288,7 @@
           <button class="btn-ghost sm" id="batchExportBtn">⬇ Export CSV</button>
         </div>
         <div class="batch-table-wrap">
-          <table class="batch-table" id="batchTable">
+          <table class="batch-table">
             <thead><tr><th>#</th><th>Original</th><th>Translation</th></tr></thead>
             <tbody id="batchTableBody"></tbody>
           </table>
@@ -297,15 +296,13 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- SUMMARIZE TAB                                                  -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ SUMMARIZE ══════════════════════════════════════════ -->
     <div class="tab-panel" id="tab-summarize">
       <div class="feature-intro">
         <div class="intro-icon">📝</div>
         <div>
           <div class="intro-title">AI Summarization</div>
-          <div class="intro-desc">Paste any transcript. LLaMA3 extracts key points, topics, action items, and sentiment.</div>
+          <div class="intro-desc">Paste any speech or transcript. Get key points, topics, action items and sentiment.</div>
         </div>
       </div>
       <div class="sum-input-area">
@@ -323,87 +320,114 @@
       <div id="summaryResult" class="summary-result hidden"></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- RAG TAB                                                        -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ SMART Q&A (RAG) — REAL WORLD FOCUSED ══════════════ -->
     <div class="tab-panel" id="tab-rag">
-      <div class="feature-intro">
-        <div class="intro-icon">🔍</div>
-        <div>
-          <div class="intro-title">Ask Your Transcript (RAG)</div>
-          <div class="intro-desc">Index transcript → FAISS semantic search → LLM answers grounded in your words. Zero hallucination.</div>
-        </div>
+
+      <!-- Use case selector -->
+      <div class="usecase-grid">
+        <button class="usecase-card active" data-case="interview">
+          <span class="usecase-icon">🎤</span>
+          <span class="usecase-label">Job Interview</span>
+          <span class="usecase-sub">Practice answers from your notes</span>
+        </button>
+        <button class="usecase-card" data-case="lecture">
+          <span class="usecase-icon">📖</span>
+          <span class="usecase-label">Lecture Notes</span>
+          <span class="usecase-sub">Quiz yourself on study material</span>
+        </button>
+        <button class="usecase-card" data-case="meeting">
+          <span class="usecase-icon">💼</span>
+          <span class="usecase-label">Meeting Recap</span>
+          <span class="usecase-sub">Find decisions & action items</span>
+        </button>
+        <button class="usecase-card" data-case="research">
+          <span class="usecase-icon">🔬</span>
+          <span class="usecase-label">Research Paper</span>
+          <span class="usecase-sub">Extract insights from papers</span>
+        </button>
+        <button class="usecase-card" data-case="legal">
+          <span class="usecase-icon">⚖️</span>
+          <span class="usecase-label">Legal Document</span>
+          <span class="usecase-sub">Understand contracts & clauses</span>
+        </button>
+        <button class="usecase-card" data-case="custom">
+          <span class="usecase-icon">✏️</span>
+          <span class="usecase-label">Custom</span>
+          <span class="usecase-sub">Any text you want to query</span>
+        </button>
       </div>
+
+      <!-- Step 1: Index -->
       <div class="rag-section">
-        <div class="rag-step-label">Step 1 — Index your transcript</div>
-        <textarea id="ragInput" placeholder="Paste transcript here…" rows="5"></textarea>
+        <div class="rag-step-label">Step 1 — Paste your content</div>
+        <textarea id="ragInput" rows="5" id="ragInput"
+          placeholder="Paste your document, notes, transcript, or any text here…"></textarea>
         <div class="rag-index-controls">
           <div id="ragIndexStatus" class="rag-status"></div>
-          <button class="btn-primary" id="ragIndexBtn">Index →</button>
+          <button class="btn-primary" id="ragIndexBtn">Index & Analyse →</button>
         </div>
       </div>
+
+      <!-- Step 2: Ask -->
       <div class="rag-section" id="ragAskSection" style="opacity:.4;pointer-events:none">
-        <div class="rag-step-label">Step 2 — Ask a question</div>
+        <div class="rag-step-label">Step 2 — Ask anything about your content</div>
         <div class="rag-ask-bar">
-          <input type="text" id="ragQuestion" placeholder="e.g. What are the main topics discussed?"/>
+          <input type="text" id="ragQuestion" placeholder="Ask a question about the content above…"/>
           <button class="btn-primary" id="ragAskBtn">Ask</button>
         </div>
-        <div class="suggested-questions">
+
+        <!-- Dynamic suggested questions based on use case -->
+        <div class="suggested-questions" id="suggestedQuestions">
           <span class="sq-label">Try:</span>
-          <button class="sq-btn">What are the key points?</button>
-          <button class="sq-btn">What action items were mentioned?</button>
-          <button class="sq-btn">Summarize in one sentence</button>
-          <button class="sq-btn">What was the conclusion?</button>
+          <button class="sq-btn" id="sq1"></button>
+          <button class="sq-btn" id="sq2"></button>
+          <button class="sq-btn" id="sq3"></button>
+          <button class="sq-btn" id="sq4"></button>
         </div>
       </div>
+
+      <!-- Chat -->
       <div id="ragChatHistory" class="rag-chat"></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- MEETING NOTES TAB                                              -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ MEETING NOTES ═══════════════════════════════════════ -->
     <div class="tab-panel" id="tab-meeting">
       <div class="feature-intro">
         <div class="intro-icon">🗂️</div>
         <div>
           <div class="intro-title">Meeting Notes Generator</div>
-          <div class="intro-desc">Paste any meeting transcript. AI generates professional notes with decisions, action items, and next steps.</div>
+          <div class="intro-desc">Paste any meeting transcript. Get structured notes with decisions, action items, and next steps in seconds.</div>
         </div>
       </div>
-      <textarea id="meetingInput"
-                placeholder="Paste meeting transcript here…&#10;&#10;Example: 'In today's standup, John mentioned the API is 80% done. Sarah said the design review is scheduled for Friday. We agreed to push the release to next Monday…'"
-                rows="8"
-                style="width:100%;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);outline:none;resize:vertical;color:var(--text);background:var(--surface);margin-bottom:1rem"></textarea>
+      <textarea id="meetingInput" rows="8"
+        placeholder="Paste meeting transcript here…&#10;&#10;Example: 'In today's standup, John mentioned the API is 80% done. Sarah said the design review is scheduled for Friday. We agreed to push the release to next Monday…'"
+        style="width:100%;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);outline:none;resize:vertical;color:var(--text);background:var(--surface);margin-bottom:1rem"></textarea>
       <div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem">
         <button class="btn-primary" id="meetingNotesBtn">Generate Notes →</button>
       </div>
       <div id="meetingResult" class="hidden"></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════════ -->
-    <!-- HISTORY TAB                                                    -->
-    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ══ HISTORY ═════════════════════════════════════════════ -->
     <div class="tab-panel" id="tab-history">
       <div class="feature-intro">
         <div class="intro-icon">📚</div>
         <div>
           <div class="intro-title">Translation History</div>
-          <div class="intro-desc">All your translations saved to your account with quality scores.</div>
+          <div class="intro-desc">All your translations saved with quality scores. Search, reload, or export.</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap">
-        <input type="text" id="historySearch"
-               placeholder="Search translations…"
-               style="flex:1;min-width:200px;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);background:var(--surface);outline:none"/>
+        <input type="text" id="historySearch" placeholder="Search translations…"
+          style="flex:1;min-width:200px;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);background:var(--surface);outline:none"/>
         <button class="btn-ghost sm" id="refreshHistoryBtn">↻ Refresh</button>
-        <button class="btn-ghost sm" id="exportHistoryBtn">⬇ Export CSV</button>
+        <button class="btn-ghost sm" id="exportHistoryBtn">⬇ CSV</button>
       </div>
       <div id="dbHistoryList"><p class="empty-msg">Loading…</p></div>
     </div>
 
   </main>
 
-  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-card">
       <div class="loading-spinner"></div>
