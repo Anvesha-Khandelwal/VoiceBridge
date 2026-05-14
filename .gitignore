@@ -45,3 +45,4 @@ htmlcov/
 auth/models.py
 
 auth/
+node_modules

@@ -298,7 +298,7 @@ def translate():
                     user_id=current_user.id)
 
         # Quality score via semantic similarity
-        quality_score = None
+        # quality_score = None
         try:
             from utils.metrics import TranslationMetrics
             quality_score = TranslationMetrics(

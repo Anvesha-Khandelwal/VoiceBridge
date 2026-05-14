@@ -198,7 +198,7 @@ origText?.addEventListener("input", () => {
   checkBtn();
   clearTimeout(autoTransTimer);
  if (len > 30) {
-    autoTransTimer = setTimeout(doTranslate, 1500);
+    autoTransTimer = setTimeout(doTranslate, 2000);
 }
 });
 
